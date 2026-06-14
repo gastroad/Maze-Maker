@@ -1,18 +1,30 @@
-export async function getMazeList() {
-  const res = await fetch(`http://localhost:3000/api/mazelist`);
+import { MazeType } from '@type/maze';
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
+
+interface ApiResponse<T> {
+  status: string;
+  results: T;
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<ApiResponse<T>> {
+  const res = await fetch(`${BASE_URL}${path}`, init);
+  if (!res.ok) throw new Error('Failed to fetch data');
   return res.json();
 }
-export async function getMaze(id: string) {
-  const res = await fetch(`http://localhost:3000/api/mazelist/${id}`);
-  return res.json();
+
+export function getMazeList() {
+  return request<MazeType[]>('/api/mazelist', { cache: 'no-store' });
 }
-export async function postMaze(body: any) {
-  const res = await fetch('http://localhost:3000/api/mazelist', {
+
+export function getMaze(id: MazeType['id']) {
+  return request<MazeType>(`/api/mazelist/${id}`, { cache: 'no-store' });
+}
+
+export function postMaze(body: MazeType) {
+  return request<MazeType>('/api/mazelist', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  return res.json();
 }

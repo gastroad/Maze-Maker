@@ -2,7 +2,7 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { scoreState } from 'src/state/game/atoms';
+import { scoreState } from '@state/game/atoms';
 
 import './PlayScoreBoard.scss';
 

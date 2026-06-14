@@ -6,7 +6,7 @@ import {
   mockStart,
   mockMazeData,
   mockResolvedPath,
-} from 'src/mock/maze';
+} from '@mock/maze';
 
 const meta: Meta<MazeBoardProps> = {
   title: 'components/molecules/MazeBoard',

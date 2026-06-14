@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import Image from 'next/image';
 
-import CharURL from '../../../assets/img/cha.png';
+import CharURL from '@assets/img/cha.png';
 import { PointType } from '@type/maze';
 
 import './MazePlayer.scss';

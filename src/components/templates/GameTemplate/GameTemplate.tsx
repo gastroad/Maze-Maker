@@ -1,9 +1,9 @@
 import { FC, ReactNode } from 'react';
 import Link from 'next/link';
-import NavigationBar from '@components/molecules/NavigationBar/NavigationBar';
-import MapTitle from '@components/atoms/MapTitle/MapTitle';
+import NavigationBar from '@components/molecules/NavigationBar';
+import MapTitle from '@components/atoms/MapTitle';
 import Image from 'next/image';
-import arrowURL from '../../../assets/img/arrow.png';
+import arrowURL from '@assets/img/arrow.png';
 
 import './GameTemplate.scss';
 

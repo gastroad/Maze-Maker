@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import HomeTemplate from '@components/templates/HomeTemplate';
-import MapTitle from '@components/atoms/MapTitle/MapTitle';
+import MapTitle from '@components/atoms/MapTitle';
 
 import './style.scss';
 

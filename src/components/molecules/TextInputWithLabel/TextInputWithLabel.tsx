@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import TextInput, {
   TextInputProps,
-} from '@components/atoms/TextInput/TextInput';
+} from '@components/atoms/TextInput';
 
 import './TextInputWithLabel.scss';
 

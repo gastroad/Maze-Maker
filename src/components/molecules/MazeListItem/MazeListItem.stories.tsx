@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import MazeListItem, { MazeListItemProps } from './MazeListItem';
-import { mockMaze } from 'src/mock/maze';
+import { mockMaze } from '@mock/maze';
 
 const meta: Meta<MazeListItemProps> = {
   title: 'components/molecules/MazeListItem',

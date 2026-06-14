@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { RecoilRoot } from 'recoil';
 import PlayMazeGame from './PlayMazeGame';
-import { mockMaze } from 'src/mock/maze';
+import { mockMaze } from '@mock/maze';
 
 describe('PlayMazeGame', () => {
   const defaultProps = {

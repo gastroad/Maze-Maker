@@ -2,11 +2,11 @@
 import { FC, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { playerState, scoreState, answerState } from 'src/state/game/atoms';
+import { playerState, scoreState, answerState } from '@state/game/atoms';
 import MazeBoard from '@components/molecules/MazeBoard';
 import MazePlayer from '@components/atoms/MazePlayer';
-import useResponsiveHeight from 'src/hooks/useResponsiveHeight';
-import useRecoilStateWithReset from 'src/hooks/useRecoilStateWithReset';
+import useResponsiveHeight from '@hooks/useResponsiveHeight';
+import useRecoilStateWithReset from '@hooks/useRecoilStateWithReset';
 import { MazeType, PointType } from '@type/maze';
 
 import './PlayMazeGame.scss';

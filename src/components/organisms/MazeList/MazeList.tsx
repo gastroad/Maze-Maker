@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import MazeListItem from '@components/molecules/MazeListItem/MazeListItem';
+import MazeListItem from '@components/molecules/MazeListItem';
 import { MazeType } from '@type/maze';
 
 import './MazeList.scss';

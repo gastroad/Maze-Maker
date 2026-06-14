@@ -5,7 +5,7 @@ import {
   mockEnd,
   mockMazeData,
   mockResolvedPath,
-} from 'src/mock/maze';
+} from '@mock/maze';
 
 describe('MazeBoard', () => {
   const height = 400;
