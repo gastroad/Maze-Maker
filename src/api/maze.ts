@@ -1,30 +1,17 @@
 import { MazeType } from '@type/maze';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
-
 interface ApiResponse<T> {
   status: string;
   results: T;
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<ApiResponse<T>> {
-  const res = await fetch(`${BASE_URL}${path}`, init);
-  if (!res.ok) throw new Error('Failed to fetch data');
-  return res.json();
-}
-
-export function getMazeList() {
-  return request<MazeType[]>('/api/mazelist', { cache: 'no-store' });
-}
-
-export function getMaze(id: MazeType['id']) {
-  return request<MazeType>(`/api/mazelist/${id}`, { cache: 'no-store' });
-}
-
-export function postMaze(body: MazeType) {
-  return request<MazeType>('/api/mazelist', {
+// 클라이언트(브라우저)에서 호출 — 상대경로라 dev 포트와 무관하게 동작한다.
+export async function postMaze(body: MazeType): Promise<ApiResponse<MazeType>> {
+  const res = await fetch('/api/mazelist', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
+  if (!res.ok) throw new Error('Failed to save maze');
+  return res.json();
 }

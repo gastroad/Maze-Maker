@@ -16,3 +16,7 @@ export function loadMazes(): MazeType[] {
 export function saveMazes(mazes: MazeType[]): void {
   fs.writeFileSync(dataFilePath, JSON.stringify(mazes));
 }
+
+export function getMazeById(id: MazeType['id']): MazeType | undefined {
+  return loadMazes().find((maze) => maze.id === id);
+}

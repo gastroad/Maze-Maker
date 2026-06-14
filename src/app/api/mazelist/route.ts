@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 } from 'uuid';
 import { MazeType } from '@type/maze';
-import { loadMazes, saveMazes } from './store';
+import { loadMazes, saveMazes } from '@server/mazeStore';
 
 export async function GET() {
   const mazes = loadMazes();

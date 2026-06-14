@@ -1,18 +1,20 @@
 import { Metadata } from 'next';
 import GameTemplate from '@components/templates/GameTemplate';
 import MazeList from '@components/organisms/MazeList';
-import { getMazeList } from '@api/maze';
+import { loadMazes } from '@server/mazeStore';
+
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { results: mazeList } = await getMazeList();
+  const mazeList = loadMazes();
   return {
     title: 'maze-maker-maplist',
     description: `${mazeList.length}개의 미로를 만나보실수 있습니다.`,
   };
 }
 
-export default async function Page() {
-  const { results: mazeList } = await getMazeList();
+export default function Page() {
+  const mazeList = loadMazes();
   return (
     <GameTemplate title="Maze List" href="/">
       <MazeList mazeList={mazeList} />

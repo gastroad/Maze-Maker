@@ -54,6 +54,9 @@
       ],
       "@assets/*": [
         "./src/assets/*"
+      ],
+      "@server/*": [
+        "./src/server/*"
       ]
     }
   },

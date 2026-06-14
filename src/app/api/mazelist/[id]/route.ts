@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { loadMazes, saveMazes } from '../store';
+import { loadMazes, saveMazes } from '@server/mazeStore';
 
 interface RouteContext {
   params: { id: string };
