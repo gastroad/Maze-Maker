@@ -1,4 +1,30 @@
+@import "../../../assets/style/variables.scss";
+
 .navigation-bar {
-    border-bottom: 1px solid #3c4043;
-    padding: 0.5rem 0px;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid $border;
+    background-color: rgba(22, 25, 31, 0.8);
+    backdrop-filter: blur(8px);
+
+    .nav-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: $radius;
+        transition: background-color $transition;
+        &:hover {
+            background-color: $surface-2;
+        }
+        &:active {
+            background-color: $surface-3;
+        }
+        img {
+            width: 1.1rem;
+            height: auto;
+        }
+    }
 }

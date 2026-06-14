@@ -1,18 +1,17 @@
-export async function getMazeList() {
-  const res = await fetch(`http://localhost:3000/api/mazelist`);
-  return res.json();
+import { MazeType } from '@type/maze';
+
+interface ApiResponse<T> {
+  status: string;
+  results: T;
 }
-export async function getMaze(id: string) {
-  const res = await fetch(`http://localhost:3000/api/mazelist/${id}`);
-  return res.json();
-}
-export async function postMaze(body: any) {
-  const res = await fetch('http://localhost:3000/api/mazelist', {
+
+// 클라이언트(브라우저)에서 호출 — 상대경로라 dev 포트와 무관하게 동작한다.
+export async function postMaze(body: MazeType): Promise<ApiResponse<MazeType>> {
+  const res = await fetch('/api/mazelist', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
+  if (!res.ok) throw new Error('Failed to save maze');
   return res.json();
 }

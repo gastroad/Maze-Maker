@@ -1,9 +1,9 @@
 'use client';
 import { FC, ChangeEvent } from 'react';
 
-import TextInputWithLabel from '@components/molecules/TextInputWithLabel/TextInputWithLabel';
-import useRecoilStateWithReset from 'src/hooks/useRecoilStateWithReset';
-import { mazeState } from 'src/state/maker/atoms';
+import TextInputWithLabel from '@components/molecules/TextInputWithLabel';
+import useRecoilStateWithReset from '@hooks/useRecoilStateWithReset';
+import { mazeState } from '@state/maker/atoms';
 
 import './MakerMazeForm.scss';
 

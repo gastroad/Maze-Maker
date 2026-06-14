@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import MazeCell from '@components/atoms/MazeCell/MazeCell';
+import MazeCell from '@components/atoms/MazeCell';
 import { MazeBoardType, MazeSizeType } from '@type/maze';
 
 import './MazeBoard.scss';

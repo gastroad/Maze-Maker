@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react';
 import MazeListItem, { MazeListItemProps } from './MazeListItem';
-import { mockMaze } from 'src/mock/maze';
+import { mockMaze } from '@mock/maze';
 
 describe('MazeListItem', () => {
   const defaultProps: MazeListItemProps = {

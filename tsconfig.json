@@ -43,6 +43,21 @@
       "@utils/*": [
         "./src/utils/*"
       ],
+      "@state/*": [
+        "./src/state/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@mock/*": [
+        "./src/mock/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@server/*": [
+        "./src/server/*"
+      ]
     }
   },
   "include": [

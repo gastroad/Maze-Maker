@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { RecoilRoot } from 'recoil';
 import MazeList from './MazeList';
-import { mockMaze } from 'src/mock/maze';
+import { mockMaze } from '@mock/maze';
 
 describe('MazeList', () => {
   const mazeList = [mockMaze, mockMaze];

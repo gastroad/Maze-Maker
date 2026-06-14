@@ -2,7 +2,7 @@
 import { FC, useEffect } from 'react';
 
 import MazeBoard from '@components/molecules/MazeBoard';
-import useResponsiveHeight from 'src/hooks/useResponsiveHeight';
+import useResponsiveHeight from '@hooks/useResponsiveHeight';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   mazeState,
@@ -10,7 +10,7 @@ import {
   mazeDataState,
   resolvedPathState,
   startEndState,
-} from 'src/state/maker/atoms';
+} from '@state/maker/atoms';
 
 import './MakerMazeMaker.scss';
 import { MazeDataType, MazeSizeType } from '@type/maze';

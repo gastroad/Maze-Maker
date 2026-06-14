@@ -17,13 +17,8 @@ const MazeCell: FC<MazeCellProps> = ({
     <div
       className={`maze-cell ${type}`}
       draggable
-      onClick={(e) => {
-        handleMazeCellClick({ col, row });
-      }}
-      onDragEnter={() => {
-        console.log({ col, row });
-        handleMazeCellClick({ col, row });
-      }}
+      onClick={() => handleMazeCellClick({ col, row })}
+      onDragEnter={() => handleMazeCellClick({ col, row })}
     />
   );
 };

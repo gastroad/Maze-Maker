@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import PlayMazeGame, { PlayMazeGameProps } from './PlayMazeGame';
-import { mockMaze } from 'src/mock/maze';
+import { mockMaze } from '@mock/maze';
 
 const meta: Meta<PlayMazeGameProps> = {
   title: 'components/organisms/PlayMazeGame',

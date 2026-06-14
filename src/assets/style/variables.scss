@@ -1,6 +1,45 @@
-$primary-color: #007bff;
-// $primary-color: rgb(138, 180, 248);
-$secondary-color: #000000;
-$background-color: rgb(53, 54, 58);
-$accent-color: #ffc107;
-$deep-blue-color: rgb(28, 28, 182);
+// ── Surfaces ────────────────────────────────────────────────
+$bg: #0c0e13; // page background (behind the app card)
+$surface: #16191f; // app card
+$surface-2: #1d212a; // inputs, list rows
+$surface-3: #262b36; // hover / elevated
+$border: #2a2f3a;
+$border-strong: #3a4150;
+
+// ── Text ────────────────────────────────────────────────────
+$text: #e8eaed;
+$text-muted: #9aa1ad;
+$text-faint: #6b7280;
+
+// ── Brand ───────────────────────────────────────────────────
+$primary: #5b8cff;
+$primary-hover: #74a0ff;
+$primary-active: #3f6fe8;
+$accent: #ffc107;
+
+// ── Maze ────────────────────────────────────────────────────
+$wall: #2f3a59;
+$road: #1a1d24;
+$resolve: rgba(91, 140, 255, 0.28);
+$grid-line: rgba(255, 255, 255, 0.04);
+
+// ── Radius ──────────────────────────────────────────────────
+$radius-sm: 6px;
+$radius: 10px;
+$radius-lg: 16px;
+
+// ── Elevation ───────────────────────────────────────────────
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+$shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+$shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+$focus-ring: 0 0 0 3px rgba(91, 140, 255, 0.35);
+
+// ── Motion ──────────────────────────────────────────────────
+$transition: 0.18s ease;
+
+// ── Legacy aliases (kept for backward compatibility) ────────
+$primary-color: $primary;
+$secondary-color: $surface-3;
+$background-color: $bg;
+$accent-color: $accent;
+$deep-blue-color: $wall;

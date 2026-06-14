@@ -17,18 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body
-        id="body"
-        style={{
-          maxWidth: '575px',
-          margin: '0 auto',
-          position: 'relative',
-          minHeight: '100vh',
-          border: '1px solid #3c4043',
-          borderRadius: '5px',
-          boxSizing: 'border-box',
-        }}
-      >
+      <body id="body">
         <Recoil>{children}</Recoil>
       </body>
     </html>

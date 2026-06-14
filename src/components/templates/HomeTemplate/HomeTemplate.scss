@@ -1,10 +1,14 @@
 .home-template {
     display: flex;
+    flex-flow: column;
     justify-content: center;
     align-items: center;
-    flex-flow: column;
-    height: 100vh;
-    > * {
-        margin-bottom: 1rem !important;
+    gap: 1rem;
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+
+    // 타이틀과 버튼 그룹 사이 여백
+    .map-title {
+        margin-bottom: 1.5rem;
     }
 }

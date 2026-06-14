@@ -3,10 +3,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition-duration: 0.8s;
     z-index: 1;
+    // 방향키 이동이 답답하지 않도록 짧고 부드러운 전환
+    transition: top 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+        left 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+
     > img {
-        background-color: white;
+        background-color: #fff;
         border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4),
+            0 0 0 2px rgba(91, 140, 255, 0.5);
     }
 }

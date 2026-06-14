@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react';
 import NavigationBar, { NavigationBarProps } from './NavigationBar';
-import { mockMaze } from 'src/mock/maze';
+import { mockMaze } from '@mock/maze';
 
 describe('NavigationBar', () => {
   it('render NavigationBar', () => {

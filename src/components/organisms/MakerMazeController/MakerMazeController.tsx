@@ -2,15 +2,15 @@
 import { FC, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
-import Button from '@components/atoms/Button/Button';
+import Button from '@components/atoms/Button';
 import {
   currentTypeState,
   mazeState,
   mazeDataState,
   resolvedPathState,
   startEndState,
-} from 'src/state/maker/atoms';
-import useRecoilStateWithReset from 'src/hooks/useRecoilStateWithReset';
+} from '@state/maker/atoms';
+import useRecoilStateWithReset from '@hooks/useRecoilStateWithReset';
 import { findPath } from '@utils/findPath';
 import { postMaze } from '@api/maze';
 import { CellType } from '@type/maze';
