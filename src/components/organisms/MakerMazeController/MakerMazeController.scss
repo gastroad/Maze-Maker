@@ -1,24 +1,32 @@
 .maker-maze-controller {
-    margin-top: 1rem;
     display: grid;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
     text-align: center;
-    gap: 0.5rem;
+
     position: fixed;
-    right: 1rem;
-    top: 50vh;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 220px;
+
     > :nth-child(1),
     > :nth-child(2) {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        gap: 0.6rem;
+    }
+
+    .btn {
+        width: 100%;
     }
 }
+
 @media (max-width: 1116px) {
     .maker-maze-controller {
-        position: static !important;
-        margin-top: 1rem;
-        display: grid;
-        text-align: center;
-        gap: 0.5rem;
+        position: static;
+        transform: none;
+        width: auto;
+        margin-top: 1.5rem;
     }
 }

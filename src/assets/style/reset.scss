@@ -126,6 +126,50 @@ table {
     border-spacing: 0;
 }
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
 body {
-    background-color: $background-color;
+    background-color: $bg;
+    color: $text;
+}
+
+// App shell — the centered mobile-width card.
+#body {
+    position: relative;
+    max-width: 575px;
+    min-height: 100vh;
+    margin: 0 auto;
+    background-color: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+    overflow: hidden;
+}
+
+::selection {
+    background: rgba(91, 140, 255, 0.35);
+}
+
+// Subtle scrollbar to match the dark theme.
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: $border-strong;
+    border-radius: 999px;
+    border: 2px solid $surface;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
 }

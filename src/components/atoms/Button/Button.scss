@@ -2,42 +2,67 @@
 
 .btn {
     all: unset;
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: $radius;
+    transition: background-color $transition, transform $transition,
+        box-shadow $transition, border-color $transition;
+    user-select: none;
+
+    &:focus-visible {
+        box-shadow: $focus-ring;
+    }
+    &:active {
+        transform: translateY(1px);
+    }
+
     &.primary {
         color: #fff;
-        background-color: $primary-color;
+        background-color: $primary;
+        box-shadow: $shadow-sm;
         &:hover {
-            background-color: darken($primary-color, 10%);
+            background-color: $primary-hover;
         }
         &:active,
         &.active {
-            background-color: darken($primary-color, 20%);
+            background-color: $primary-active;
+        }
+        &.active {
+            box-shadow: $focus-ring;
         }
     }
+
     &.secondary {
-        color: #fff;
-        background-color: $secondary-color;
+        color: $text;
+        background-color: $surface-2;
+        border: 1px solid $border-strong;
         &:hover {
-            background-color: lighten($secondary-color, 10%);
+            background-color: $surface-3;
         }
         &:active,
         &.active {
-            background-color: lighten($secondary-color, 20%);
+            background-color: $surface-3;
+            border-color: $primary;
         }
     }
+
     &.tertiary {
-        color: $secondary-color;
-        background-color: #fff;
+        color: $text-muted;
+        background-color: transparent;
         &:hover {
-            background-color: darken(#fff, 10%);
+            color: $text;
+            background-color: $surface-2;
         }
         &:active,
         &.active {
-            background-color: darken(#fff, 20%);
+            background-color: $surface-3;
         }
     }
 }

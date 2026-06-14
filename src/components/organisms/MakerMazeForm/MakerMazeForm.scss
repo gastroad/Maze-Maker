@@ -1,11 +1,11 @@
 .maze-form {
     display: grid;
     gap: 1rem;
-    padding: 5px;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
+
     > :nth-child(3) {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
+        gap: 1rem;
     }
 }

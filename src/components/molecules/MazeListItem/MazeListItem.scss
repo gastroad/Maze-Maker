@@ -1,29 +1,42 @@
+@import "../../../assets/style/variables.scss";
+
 .maze-list-item {
-    color: white;
-    border-radius: 5px;
-    box-sizing: border-box;
+    color: $text;
+
     .link {
         display: block;
+        padding: 1rem 1.1rem;
         color: inherit;
         text-decoration: inherit;
-        padding: 0.5rem;
+        transition: background-color $transition;
+        &:hover {
+            background-color: $surface-2;
+        }
+        &:active {
+            background-color: $surface-3;
+        }
     }
+
     .maze-list-item-title {
         text-align: left;
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
     }
+
     .maze-list-item-info {
-        display: none;
         display: grid;
         grid-template-columns: 2fr 1fr;
+        align-items: center;
         font-size: 0.8rem;
         > :nth-child(1) {
             text-align: left;
+            color: $text-muted;
         }
         > :nth-child(2) {
             text-align: right;
-            color: gray;
+            color: $text-faint;
+            font-variant-numeric: tabular-nums;
         }
         > .btn {
             margin-top: 0.5rem;
