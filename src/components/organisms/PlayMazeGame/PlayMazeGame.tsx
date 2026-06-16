@@ -61,7 +61,7 @@ const PlayMazeGame: FC<PlayMazeGameProps> = ({ maze }) => {
 
   useEffect(() => {
     if (player.x == end.x && player.y == end.y) {
-      alert(`성공, ${score}점 획득하셨습니다.`);
+      // alert(`성공, ${score}점 획득하셨습니다.`);
       resetPlayer();
       resetScore();
     }

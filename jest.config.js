@@ -7,8 +7,10 @@ const createJestConfig = nextJest({
 // Keep in sync with the path aliases in tsconfig.json.
 // Required so `jest.mock('@alias/...')` calls resolve correctly.
 const customJestConfig = {
+  "preset": "jest-puppeteer",
+  testEnvironment: 'jest-environment-puppeteer',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testEnvironment: 'jest-environment-jsdom',
+  // testEnvironment: 'jest-environment-jsdom',
   collectCoverage: true,
   moduleNameMapper: {
     '^@api/(.*)$': '<rootDir>/src/api/$1',
