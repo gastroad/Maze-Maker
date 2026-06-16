@@ -11,13 +11,16 @@
     "build-storybook": "storybook build",
     "test": "jest --watch",
     "test:ci": "jest --ci",
-    "prettier": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\""
+    "prettier": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "test:e2e": "node E2ETest.js"
   },
   "dependencies": {
+    "chromedriver": "^119.0.1",
     "next": "13.4.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "recoil": "^0.7.7",
+    "selenium-webdriver": "^4.15.0",
     "swr": "^2.2.0",
     "uuid": "^9.0.0"
   },
@@ -33,6 +36,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
+    "@types/cypress": "^1.1.3",
     "@types/jest": "^29.5.1",
     "@types/node": "20.1.5",
     "@types/react": "18.2.6",
