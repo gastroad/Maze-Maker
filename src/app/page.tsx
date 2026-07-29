@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import HomeTemplate from '@components/templates/HomeTemplate';
 import MapTitle from '@components/atoms/MapTitle';
+import AuthStatus from '@components/organisms/AuthStatus';
 
 import './style.scss';
 
@@ -14,6 +15,7 @@ export default function Page() {
       <Link className="link-btn" href={'/maker'}>
         Make
       </Link>
+      <AuthStatus />
     </HomeTemplate>
   );
 }
