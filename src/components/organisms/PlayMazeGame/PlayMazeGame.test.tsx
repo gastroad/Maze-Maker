@@ -1,28 +1,21 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import PlayMazeGame from './PlayMazeGame';
 import { mockMaze } from '@mock/maze';
 import { useGameStore } from '@state/game/store';
 
 describe('PlayMazeGame', () => {
-  it('renders the board and starts the player at the maze start', () => {
+  it('보드·플레이어·조이스틱을 렌더한다', () => {
     const { container } = render(<PlayMazeGame maze={mockMaze} />);
-
     expect(container.querySelector('.maze-game')).toBeInTheDocument();
-    expect(useGameStore.getState().game.player).toEqual(mockMaze.start);
+    expect(container.querySelector('.maze-player')).toBeInTheDocument();
+    expect(container.querySelector('.joystick')).toBeInTheDocument();
   });
 
-  it('only counts valid moves (blocked by walls / bounds)', () => {
+  it('마운트 시 미로로 게임을 초기화한다(ready + 최적 경로 계산)', () => {
     render(<PlayMazeGame maze={mockMaze} />);
-
-    // (0,0)에서 오른쪽은 벽 → 이동 없음
-    fireEvent.keyDown(window, { key: 'ArrowRight' });
-    expect(useGameStore.getState().game.moves).toBe(0);
-
-    // 아래로는 이동 가능 → moves 1, 위치 (1,0)
-    fireEvent.keyDown(window, { key: 'ArrowDown' });
-    const game = useGameStore.getState().game;
-    expect(game.moves).toBe(1);
-    expect(game.player).toEqual({ x: 1, y: 0 });
+    const s = useGameStore.getState();
+    expect(s.status).toBe('ready');
+    expect(s.maze).toBe(mockMaze);
+    expect(s.optimal).toBeGreaterThan(0);
   });
 });

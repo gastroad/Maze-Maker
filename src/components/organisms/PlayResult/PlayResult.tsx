@@ -3,7 +3,7 @@ import { FC } from 'react';
 import Link from 'next/link';
 
 import { useGameStore } from '@state/game/store';
-import { elapsedMs, computeStars } from '@game/mazeEngine';
+import { elapsedMs, computeStars, parMs } from '@game/mazeEngine';
 
 import './PlayResult.scss';
 
@@ -11,17 +11,20 @@ function formatTime(ms: number): string {
   const total = Math.floor(ms / 1000);
   const m = Math.floor(total / 60);
   const s = total % 60;
-  return `${m}:${String(s).padStart(2, '0')}`;
+  const cs = Math.floor((ms % 1000) / 10);
+  return `${m}:${String(s).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
 }
 
 export interface PlayResultProps {}
 const PlayResult: FC<PlayResultProps> = () => {
-  const game = useGameStore((s) => s.game);
+  const startedAt = useGameStore((s) => s.startedAt);
+  const finishedAt = useGameStore((s) => s.finishedAt);
   const optimal = useGameStore((s) => s.optimal);
   const reset = useGameStore((s) => s.reset);
 
-  const stars = computeStars(game.moves, optimal);
-  const time = elapsedMs(game);
+  const time = elapsedMs({ startedAt, finishedAt });
+  const stars = computeStars(time, optimal);
+  const par = parMs(optimal);
 
   return (
     <div className="play-result" role="dialog" aria-label="게임 결과">
@@ -38,15 +41,12 @@ const PlayResult: FC<PlayResultProps> = () => {
 
         <dl className="play-result-stats">
           <div>
-            <dt>이동</dt>
-            <dd>
-              {game.moves}
-              <span> / 최적 {optimal || '-'}</span>
-            </dd>
-          </div>
-          <div>
             <dt>시간</dt>
             <dd>{formatTime(time)}</dd>
+          </div>
+          <div>
+            <dt>목표</dt>
+            <dd>{par > 0 ? formatTime(par) : '-'}</dd>
           </div>
         </dl>
 

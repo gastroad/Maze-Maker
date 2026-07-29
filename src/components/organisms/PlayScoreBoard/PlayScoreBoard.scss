@@ -35,4 +35,17 @@
       color: $text-faint;
     }
   }
+
+  &-stars {
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    line-height: 1;
+
+    .on {
+      color: $accent;
+    }
+    .off {
+      color: $border-strong;
+    }
+  }
 }

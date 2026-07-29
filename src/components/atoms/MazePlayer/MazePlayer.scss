@@ -1,17 +1,16 @@
 .maze-player {
     position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 0;
+    left: 0;
     z-index: 1;
-    // 방향키 이동이 답답하지 않도록 짧고 부드러운 전환
-    transition: top 0.14s cubic-bezier(0.22, 1, 0.36, 1),
-        left 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+    // 위치는 게임 루프가 transform 으로 직접 갱신한다(합성 레이어로 승격).
+    will-change: transform;
+    pointer-events: none;
 
     > img {
-        background-color: #fff;
         border-radius: 50%;
+        background-color: #fff;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4),
-            0 0 0 2px rgba(91, 140, 255, 0.5);
+            0 0 0 2px rgba(91, 140, 255, 0.6);
     }
 }

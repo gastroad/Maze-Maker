@@ -1,49 +1,22 @@
-import { render, fireEvent } from '@testing-library/react';
-import MazePlayer, { MazePlayerProps } from './MazePlayer';
+import { createRef } from 'react';
+import { render } from '@testing-library/react';
+import MazePlayer from './MazePlayer';
 
 describe('MazePlayer', () => {
-  const playerSize = { width: 100, height: 100 };
-  const player = { x: 0, y: 0 };
-  const defaultProps: MazePlayerProps = {
-    player,
-    playerSize,
-  };
+  it('지정한 크기로 렌더된다', () => {
+    const { container } = render(<MazePlayer size={100} />);
+    const el = container.querySelector('.maze-player') as HTMLElement;
+    expect(el).toBeInTheDocument();
+    expect(container.querySelector('img')).toBeInTheDocument();
 
-  it('render MazePlayer', () => {
-    const { container } = render(<MazePlayer {...defaultProps} />);
-    const PlayerElement = container.querySelector('.maze-player');
-    const ImgElement = container.querySelector('img');
-    expect(PlayerElement).toBeInTheDocument();
-    expect(ImgElement).toBeInTheDocument();
+    const style = getComputedStyle(el);
+    expect(style.width).toBe('100px');
+    expect(style.height).toBe('100px');
   });
 
-  it('check MazePlayer size', () => {
-    const { container } = render(<MazePlayer {...defaultProps} />);
-    const PlayerElement = container.querySelector('.maze-player');
-    const ImgElement = container.querySelector('img');
-
-    expect(PlayerElement).toBeInTheDocument();
-    expect(ImgElement).toBeInTheDocument();
-
-    const playerElementStyle = getComputedStyle(PlayerElement!);
-    expect(playerElementStyle.width).toEqual(`${playerSize.width}px`);
-    expect(playerElementStyle.height).toEqual(`${playerSize.height}px`);
-
-    const ImgElementStyle = getComputedStyle(ImgElement!);
-    expect(ImgElementStyle.width).toEqual(`${playerSize.width * 0.8}px`);
-    expect(ImgElementStyle.height).toEqual(`${playerSize.height * 0.8}px`);
-  });
-
-  it('check MazePlayer place', () => {
-    const player = { x: 1, y: 2 };
-    const props: MazePlayerProps = { ...defaultProps, player };
-    const { container } = render(<MazePlayer {...props} />);
-
-    const PlayerElement = container.querySelector('.maze-player');
-    expect(PlayerElement).toBeInTheDocument();
-
-    const playerElementStyle = getComputedStyle(PlayerElement!);
-    expect(playerElementStyle.left).toEqual(`${playerSize.width * player.y}px`);
-    expect(playerElementStyle.top).toEqual(`${playerSize.height * player.x}px`);
+  it('ref 가 .maze-player 엘리먼트로 전달된다', () => {
+    const ref = createRef<HTMLDivElement>();
+    const { container } = render(<MazePlayer ref={ref} size={80} />);
+    expect(ref.current).toBe(container.querySelector('.maze-player'));
   });
 });
