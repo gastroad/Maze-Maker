@@ -2,14 +2,14 @@
 import { FC, ChangeEvent } from 'react';
 
 import TextInputWithLabel from '@components/molecules/TextInputWithLabel';
-import useRecoilStateWithReset from '@hooks/useRecoilStateWithReset';
-import { mazeState } from '@state/maker/atoms';
+import { useMakerStore } from '@state/maker/store';
 
 import './MakerMazeForm.scss';
 
 export interface MakerMazeFormProps {}
 const MakerMazeForm: FC<MakerMazeFormProps> = () => {
-  const { get: maze, set: setMaze } = useRecoilStateWithReset(mazeState);
+  const maze = useMakerStore((state) => state.maze);
+  const setMaze = useMakerStore((state) => state.setMaze);
 
   const handleMaze = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

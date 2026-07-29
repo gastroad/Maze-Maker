@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { RecoilRoot } from 'recoil';
+import { render } from '@testing-library/react';
 import MazeList from './MazeList';
 import { mockMaze } from '@mock/maze';
 

@@ -3,25 +3,20 @@ import { FC, useEffect } from 'react';
 
 import MazeBoard from '@components/molecules/MazeBoard';
 import useResponsiveHeight from '@hooks/useResponsiveHeight';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import {
-  mazeState,
-  currentTypeState,
-  mazeDataState,
-  resolvedPathState,
-  startEndState,
-} from '@state/maker/atoms';
+import { useMakerStore } from '@state/maker/store';
 
 import './MakerMazeMaker.scss';
 import { MazeDataType, MazeSizeType } from '@type/maze';
 
 export interface MakerMazeMakerProps {}
 const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
-  const [mazeData, setMazeData] = useRecoilState(mazeDataState);
-  const [startEnd, setStartEnd] = useRecoilState(startEndState);
-  const maze = useRecoilValue(mazeState);
-  const currentType = useRecoilValue(currentTypeState);
-  const resolvedPath = useRecoilValue(resolvedPathState);
+  const mazeData = useMakerStore((state) => state.mazeData);
+  const setMazeData = useMakerStore((state) => state.setMazeData);
+  const startEnd = useMakerStore((state) => state.startEnd);
+  const setStartEnd = useMakerStore((state) => state.setStartEnd);
+  const maze = useMakerStore((state) => state.maze);
+  const currentType = useMakerStore((state) => state.currentType);
+  const resolvedPath = useMakerStore((state) => state.resolvedPath);
 
   useEffect(() => {
     const mazeData = new Array(maze.mazeSize.col).fill(0).map(() => {

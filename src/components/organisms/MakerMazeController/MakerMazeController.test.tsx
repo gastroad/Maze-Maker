@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import { RecoilRoot } from 'recoil';
 import MakerMazeController from './MakerMazeController';
 
 const mockPush = jest.fn();
@@ -23,11 +22,7 @@ describe('MakerMazeController', () => {
   });
 
   it('render MakerMazeController', () => {
-    const { container, getAllByRole } = render(
-      <RecoilRoot>
-        <MakerMazeController />
-      </RecoilRoot>,
-    );
+    const { container, getAllByRole } = render(<MakerMazeController />);
 
     const mazeControllerElement = container.querySelector(
       '.maker-maze-controller',
@@ -39,11 +34,7 @@ describe('MakerMazeController', () => {
   });
 
   it('calls handleCurrentType', () => {
-    const { getByText } = render(
-      <RecoilRoot>
-        <MakerMazeController />
-      </RecoilRoot>,
-    );
+    const { getByText } = render(<MakerMazeController />);
 
     const startButtonElement = getByText('시작 지점');
     const endButtonElement = getByText('종료 지점');
@@ -76,11 +67,7 @@ describe('MakerMazeController', () => {
   });
 
   it('calls handleResolveButton', async () => {
-    const { getByText } = render(
-      <RecoilRoot>
-        <MakerMazeController />
-      </RecoilRoot>,
-    );
+    const { getByText } = render(<MakerMazeController />);
     const findAndSubmitButtonElement = getByText('find & submit');
 
     fireEvent.click(findAndSubmitButtonElement);
