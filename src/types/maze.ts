@@ -21,6 +21,8 @@ export interface MazeInfoType {
   title: string;
   name: string;
   mazeSize: MazeSizeType;
+  // 미로를 만든 Neon Auth 사용자 id. 로그인 없이 생성된(기존) 미로는 없음.
+  userId?: string;
 }
 
 export type MazeType = MazeBoardType & MazeInfoType;

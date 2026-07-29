@@ -15,3 +15,12 @@ export async function postMaze(body: MazeType): Promise<ApiResponse<MazeType>> {
   if (!res.ok) throw new Error('Failed to save maze');
   return res.json();
 }
+
+export async function deleteMaze(id: string): Promise<{ status: string }> {
+  const res = await fetch(`/api/mazelist/${id}`, { method: 'DELETE' });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.message || 'Failed to delete maze');
+  }
+  return res.json();
+}

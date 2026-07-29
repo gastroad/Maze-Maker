@@ -1,15 +1,10 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import { RecoilRoot } from 'recoil';
+import { render, fireEvent } from '@testing-library/react';
 import MakerMazeForm from './MakerMazeForm';
 
 describe('MakerMazeForm', () => {
   it('render MakerMazeForm', () => {
-    const { container } = render(
-      <RecoilRoot>
-        <MakerMazeForm />
-      </RecoilRoot>,
-    );
+    const { container } = render(<MakerMazeForm />);
 
     const mazeFormElement = container.querySelector('.maze-form');
     const inputElements = container.querySelectorAll('.input-txt-label');
@@ -18,11 +13,7 @@ describe('MakerMazeForm', () => {
     expect(inputElements.length).toEqual(4);
   });
   it('calls handleMaze', () => {
-    const { getByPlaceholderText } = render(
-      <RecoilRoot>
-        <MakerMazeForm />
-      </RecoilRoot>,
-    );
+    const { getByPlaceholderText } = render(<MakerMazeForm />);
     const titleInputElement = getByPlaceholderText(
       '맵 이름',
     ) as HTMLInputElement;

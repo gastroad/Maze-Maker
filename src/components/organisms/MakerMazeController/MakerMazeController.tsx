@@ -3,14 +3,7 @@ import { FC, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 import Button from '@components/atoms/Button';
-import {
-  currentTypeState,
-  mazeState,
-  mazeDataState,
-  resolvedPathState,
-  startEndState,
-} from '@state/maker/atoms';
-import useRecoilStateWithReset from '@hooks/useRecoilStateWithReset';
+import { useMakerStore } from '@state/maker/store';
 import { findPath } from '@utils/findPath';
 import { postMaze } from '@api/maze';
 import { CellType } from '@type/maze';
@@ -20,27 +13,13 @@ import './MakerMazeController.scss';
 export interface MakerMazeControllerProps {}
 const MakerMazeController: FC<MakerMazeControllerProps> = () => {
   const router = useRouter();
-  const { get: maze, reset: resetMazeState } =
-    useRecoilStateWithReset(mazeState);
-  const {
-    get: currentType,
-    set: setCurrentType,
-    reset: resetCurrentTypeState,
-  } = useRecoilStateWithReset(currentTypeState);
-  const { get: mazeData, reset: resetMazeDataState } =
-    useRecoilStateWithReset(mazeDataState);
-  const { set: setResolvedPath, reset: resetResolvedPathState } =
-    useRecoilStateWithReset(resolvedPathState);
-  const { get: startEnd, reset: resetStartEndState } =
-    useRecoilStateWithReset(startEndState);
-
-  const resetState = () => {
-    resetMazeState();
-    resetCurrentTypeState();
-    resetMazeDataState();
-    resetResolvedPathState();
-    resetStartEndState();
-  };
+  const maze = useMakerStore((state) => state.maze);
+  const currentType = useMakerStore((state) => state.currentType);
+  const setCurrentType = useMakerStore((state) => state.setCurrentType);
+  const mazeData = useMakerStore((state) => state.mazeData);
+  const setResolvedPath = useMakerStore((state) => state.setResolvedPath);
+  const startEnd = useMakerStore((state) => state.startEnd);
+  const reset = useMakerStore((state) => state.reset);
 
   const handleCurrentType = (e: MouseEvent<HTMLButtonElement>) => {
     const { name } = e.target as HTMLButtonElement;
@@ -59,7 +38,7 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
     };
     const res = await postMaze(body);
     if (res.status === 'success') {
-      resetState();
+      reset();
       router.push('/');
     }
   };

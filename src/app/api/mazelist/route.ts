@@ -1,18 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v4 } from 'uuid';
 import { MazeType } from '@type/maze';
-import { loadMazes, saveMazes } from '@server/mazeStore';
+import { getMazes, createMaze } from '@server/service/mazeService';
+import { auth } from '@server/auth/server';
 
 export async function GET() {
-  const mazes = loadMazes();
+  const mazes = await getMazes();
   return NextResponse.json({ status: 'success', results: mazes });
 }
 
 export async function POST(req: NextRequest) {
+  const { data: session } = await auth.getSession();
+  if (!session?.user) {
+    return NextResponse.json(
+      { status: 'error', message: '로그인이 필요합니다.' },
+      { status: 401 },
+    );
+  }
+
   const body: MazeType = await req.json();
-  const mazes = loadMazes();
-  const newMaze: MazeType = { ...body, id: v4() };
-  mazes.push(newMaze);
-  saveMazes(mazes);
+  const newMaze = await createMaze(body, session.user.id);
   return NextResponse.json({ status: 'success', results: newMaze });
 }

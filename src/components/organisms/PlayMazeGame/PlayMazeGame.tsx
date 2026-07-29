@@ -1,12 +1,10 @@
 'use client';
 import { FC, useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
 
-import { playerState, scoreState, answerState } from '@state/game/atoms';
+import { useGameStore } from '@state/game/store';
 import MazeBoard from '@components/molecules/MazeBoard';
 import MazePlayer from '@components/atoms/MazePlayer';
 import useResponsiveHeight from '@hooks/useResponsiveHeight';
-import useRecoilStateWithReset from '@hooks/useRecoilStateWithReset';
 import { MazeType, PointType } from '@type/maze';
 
 import './PlayMazeGame.scss';
@@ -17,17 +15,13 @@ export interface PlayMazeGameProps {
 const PlayMazeGame: FC<PlayMazeGameProps> = ({ maze }) => {
   const { mazeData, end, start, resolvedPath } = maze;
   const { elementRef, height } = useResponsiveHeight(0, 1, 1);
-  const answer = useRecoilValue(answerState);
-  const {
-    get: player,
-    set: setPlayer,
-    reset: resetPlayer,
-  } = useRecoilStateWithReset(playerState);
-  const {
-    get: score,
-    set: setScore,
-    reset: resetScore,
-  } = useRecoilStateWithReset(scoreState);
+  const answer = useGameStore((state) => state.answer);
+  const player = useGameStore((state) => state.player);
+  const setPlayer = useGameStore((state) => state.setPlayer);
+  const resetPlayer = useGameStore((state) => state.resetPlayer);
+  const score = useGameStore((state) => state.score);
+  const setScore = useGameStore((state) => state.setScore);
+  const resetScore = useGameStore((state) => state.resetScore);
 
   const handlePlayer = (nextPlayer: PointType) => {
     if (

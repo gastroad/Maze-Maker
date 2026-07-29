@@ -1,17 +1,17 @@
 'use client';
 import { FC } from 'react';
-import { useRecoilState, useResetRecoilState } from 'recoil';
 
 import Button from '@components/atoms/Button';
-import { answerState, playerState, scoreState } from '@state/game/atoms';
+import { useGameStore } from '@state/game/store';
 
 import './PlayMazeController.scss';
 
 export interface PlayMazeControllerProps {}
 const PlayMazeController: FC<PlayMazeControllerProps> = () => {
-  const [answer, setAnswer] = useRecoilState(answerState);
-  const resetPlayer = useResetRecoilState(playerState);
-  const resetScore = useResetRecoilState(scoreState);
+  const answer = useGameStore((state) => state.answer);
+  const setAnswer = useGameStore((state) => state.setAnswer);
+  const resetPlayer = useGameStore((state) => state.resetPlayer);
+  const resetScore = useGameStore((state) => state.resetScore);
 
   const resetPlayerAndScore = () => {
     resetPlayer();

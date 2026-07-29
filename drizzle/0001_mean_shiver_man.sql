@@ -1,0 +1,1 @@
+ALTER TABLE "mazes" ADD COLUMN "user_id" text;

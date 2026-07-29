@@ -1,15 +1,10 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { RecoilRoot } from 'recoil';
 import PlayMazeController from './PlayMazeController';
 
 describe('PlayMazeController', () => {
   it('render PlayMazeController', () => {
-    const { container, getByText } = render(
-      <RecoilRoot>
-        <PlayMazeController />
-      </RecoilRoot>,
-    );
+    const { container, getByText } = render(<PlayMazeController />);
 
     const playMazeControllerElement = container.querySelector(
       '.play-maze-controller',
@@ -24,26 +19,18 @@ describe('PlayMazeController', () => {
   });
 
   it('calls handleResolveButton', () => {
-    const { getByText } = render(
-      <RecoilRoot>
-        <PlayMazeController />
-      </RecoilRoot>,
-    );
+    const { getByText } = render(<PlayMazeController />);
 
     const resolveButtonElement = getByText('정답보기');
     fireEvent.click(resolveButtonElement);
-    // TODO atom 불러와서 검증로직 추가
+    // TODO store 불러와서 검증로직 추가
   });
 
   it('calls handleResetButton', () => {
-    const { getByText } = render(
-      <RecoilRoot>
-        <PlayMazeController />
-      </RecoilRoot>,
-    );
+    const { getByText } = render(<PlayMazeController />);
 
     const resetButtonElement = getByText('Reset');
     fireEvent.click(resetButtonElement);
-    // TODO atom 불러와서 검증로직 추가
+    // TODO store 불러와서 검증로직 추가
   });
 });
