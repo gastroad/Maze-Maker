@@ -48,7 +48,7 @@ describe('MazeCell', () => {
     expect(mazeCellElement).toBeInTheDocument();
 
     fireEvent.click(mazeCellElement!);
-    expect(handleMazeCellClick).toBeCalledWith({ col: 1, row: 1 });
-    expect(handleMazeCellClick).toBeCalledTimes(1);
+    expect(handleMazeCellClick).toHaveBeenCalledWith({ col: 1, row: 1 });
+    expect(handleMazeCellClick).toHaveBeenCalledTimes(1);
   });
 });

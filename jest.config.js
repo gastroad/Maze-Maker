@@ -7,7 +7,7 @@ const createJestConfig = nextJest({
 // Keep in sync with the path aliases in tsconfig.json.
 // Required so `jest.mock('@alias/...')` calls resolve correctly.
 const customJestConfig = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testEnvironment: 'jest-environment-jsdom',
   collectCoverage: true,
   moduleNameMapper: {
@@ -22,6 +22,7 @@ const customJestConfig = {
     '^@mock/(.*)$': '<rootDir>/src/mock/$1',
     '^@assets/(.*)$': '<rootDir>/src/assets/$1',
     '^@server/(.*)$': '<rootDir>/src/server/$1',
+    '^@lib/(.*)$': '<rootDir>/src/lib/$1',
   },
 }
 
