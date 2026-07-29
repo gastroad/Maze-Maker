@@ -3,17 +3,11 @@ import { render } from '@testing-library/react';
 import PlayScoreBoard from './PlayScoreBoard';
 
 describe('PlayScoreBoard', () => {
-  it('render PlayScoreBoard', () => {
-    const { container } = render(<PlayScoreBoard />);
+  it('renders the HUD with move and time labels', () => {
+    const { container, getByText } = render(<PlayScoreBoard />);
 
-    const scoreBoardElement = container.querySelector('.score-board');
-    expect(scoreBoardElement).toBeInTheDocument();
-  });
-
-  it('should display the correct score', () => {
-    const { getByText } = render(<PlayScoreBoard />);
-
-    const scoreTextElement = getByText(`score: ${0}`);
-    expect(scoreTextElement).toBeInTheDocument();
+    expect(container.querySelector('.score-board')).toBeInTheDocument();
+    expect(getByText('이동')).toBeInTheDocument();
+    expect(getByText('시간')).toBeInTheDocument();
   });
 });

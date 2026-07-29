@@ -1,20 +1,38 @@
 @import "../../../assets/style/variables.scss";
 
 .score-board {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 
-    span {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.4rem 0.9rem;
-        font-size: 0.95rem;
-        font-weight: 700;
-        font-variant-numeric: tabular-nums;
-        color: $text;
-        background-color: $surface-2;
-        border: 1px solid $border;
-        border-radius: 999px;
+  &-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    background-color: $surface-2;
+    border: 1px solid $border;
+    border-radius: 999px;
+  }
+
+  &-label {
+    font-size: 0.72rem;
+    color: $text-muted;
+  }
+
+  &-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $text;
+    font-variant-numeric: tabular-nums;
+
+    em {
+      margin-left: 0.15rem;
+      font-style: normal;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: $text-faint;
     }
+  }
 }

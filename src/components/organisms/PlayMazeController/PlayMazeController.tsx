@@ -8,29 +8,19 @@ import './PlayMazeController.scss';
 
 export interface PlayMazeControllerProps {}
 const PlayMazeController: FC<PlayMazeControllerProps> = () => {
-  const answer = useGameStore((state) => state.answer);
-  const setAnswer = useGameStore((state) => state.setAnswer);
-  const resetPlayer = useGameStore((state) => state.resetPlayer);
-  const resetScore = useGameStore((state) => state.resetScore);
-
-  const resetPlayerAndScore = () => {
-    resetPlayer();
-    resetScore();
-    setAnswer(false);
-  };
-
-  const handleResolveButton = () => {
-    setAnswer(!answer);
-  };
-
-  const handleResetButton = () => {
-    resetPlayerAndScore();
-  };
+  const reset = useGameStore((state) => state.reset);
+  const toggleAnswer = useGameStore((state) => state.toggleAnswer);
+  const showAnswer = useGameStore((state) => state.showAnswer);
 
   return (
     <div className="play-maze-controller">
-      <Button onClick={handleResetButton} label="Reset" type="secondary" />
-      <Button onClick={handleResolveButton} label="정답보기" type="primary" />
+      <Button onClick={reset} label="다시하기" type="secondary" />
+      <Button
+        onClick={toggleAnswer}
+        label={showAnswer ? '정답 숨기기' : '정답 보기'}
+        type="primary"
+        active={showAnswer}
+      />
     </div>
   );
 };

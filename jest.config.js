@@ -23,6 +23,7 @@ const customJestConfig = {
     '^@assets/(.*)$': '<rootDir>/src/assets/$1',
     '^@server/(.*)$': '<rootDir>/src/server/$1',
     '^@lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^@game/(.*)$': '<rootDir>/src/game/$1',
   },
 }
 

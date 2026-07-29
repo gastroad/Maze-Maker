@@ -1,4 +1,9 @@
+.maze-game-wrap {
+    display: flex;
+    flex-flow: column;
+}
+
 .maze-game {
     position: relative;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
