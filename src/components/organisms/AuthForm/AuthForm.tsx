@@ -53,13 +53,13 @@ const AuthForm: FC<AuthFormProps> = () => {
     <div className="auth-form">
       <div className="auth-form-tabs">
         <Button
-          type="primary"
+          type="secondary"
           label="로그인"
           active={mode === 'signin'}
           onClick={() => changeMode('signin')}
         />
         <Button
-          type="primary"
+          type="secondary"
           label="회원가입"
           active={mode === 'signup'}
           onClick={() => changeMode('signup')}

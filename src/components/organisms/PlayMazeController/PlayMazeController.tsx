@@ -29,7 +29,7 @@ const PlayMazeController: FC<PlayMazeControllerProps> = () => {
 
   return (
     <div className="play-maze-controller">
-      <Button onClick={handleResetButton} label="Reset" type="primary" />
+      <Button onClick={handleResetButton} label="Reset" type="secondary" />
       <Button onClick={handleResolveButton} label="정답보기" type="primary" />
     </div>
   );

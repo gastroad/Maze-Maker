@@ -49,14 +49,14 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
         <Button
           onClick={handleCurrentType}
           label="시작 지점"
-          type="primary"
+          type="secondary"
           name="start"
           active={currentType === 'start'}
         />
         <Button
           onClick={handleCurrentType}
           label="종료 지점"
-          type="primary"
+          type="secondary"
           name="end"
           active={currentType === 'end'}
         />
@@ -65,14 +65,14 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
         <Button
           onClick={handleCurrentType}
           label="벽(이동 불가)"
-          type="primary"
+          type="secondary"
           name="wall"
           active={currentType === 'wall'}
         />
         <Button
           onClick={handleCurrentType}
           label="길(이동 가능)"
-          type="primary"
+          type="secondary"
           name="road"
           active={currentType === 'road'}
         />

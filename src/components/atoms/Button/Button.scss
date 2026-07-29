@@ -6,14 +6,14 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    padding: 0.65rem 1.1rem;
+    padding: 0.72rem 1.15rem;
     font-size: 0.95rem;
     font-weight: 600;
     line-height: 1;
     cursor: pointer;
     border-radius: $radius;
-    transition: background-color $transition, transform $transition,
-        box-shadow $transition, border-color $transition;
+    transition: background-color $transition, color $transition,
+        transform $transition, box-shadow $transition, border-color $transition;
     user-select: none;
 
     &:focus-visible {
@@ -23,6 +23,7 @@
         transform: translateY(1px);
     }
 
+    // 주요 액션(CTA) — 제출/로그인 등
     &.primary {
         color: #fff;
         background-color: $primary;
@@ -34,25 +35,29 @@
         &.active {
             background-color: $primary-active;
         }
-        &.active {
-            box-shadow: $focus-ring;
-        }
     }
 
+    // 토글·보조 — 기본은 은은하게, 선택(active)되면 파란색으로 강조
     &.secondary {
-        color: $text;
+        color: $text-muted;
         background-color: $surface-2;
-        border: 1px solid $border-strong;
+        border: 1px solid $border;
         &:hover {
+            color: $text;
             background-color: $surface-3;
+            border-color: $border-strong;
         }
-        &:active,
         &.active {
-            background-color: $surface-3;
-            border-color: $primary;
+            color: #fff;
+            background-color: $primary;
+            border-color: transparent;
+            &:hover {
+                background-color: $primary-hover;
+            }
         }
     }
 
+    // 고스트 — 텍스트성 버튼
     &.tertiary {
         color: $text-muted;
         background-color: transparent;

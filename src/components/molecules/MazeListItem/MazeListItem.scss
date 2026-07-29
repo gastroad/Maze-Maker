@@ -35,9 +35,14 @@
             color: $text-muted;
         }
         > :nth-child(2) {
-            text-align: right;
-            color: $text-faint;
+            justify-self: end;
+            padding: 0.15rem 0.55rem;
+            color: $text-muted;
+            font-size: 0.72rem;
             font-variant-numeric: tabular-nums;
+            background: $surface-2;
+            border: 1px solid $border;
+            border-radius: 999px;
         }
         > .btn {
             margin-top: 0.5rem;

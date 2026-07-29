@@ -1,21 +1,35 @@
+@import "../../../assets/style/variables.scss";
+
 .auth-status {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 24px;
+  gap: 12px;
+  min-height: 40px;
 
   &-user {
-    color: #cfcfd4;
-    font-size: 14px;
+    color: $text-muted;
+    font-size: 0.9rem;
   }
 
   &-link {
-    background: none;
-    border: none;
-    padding: 0;
-    color: #8ab4ff;
-    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.15rem;
+    background: transparent;
+    border: 1px solid $border-strong;
+    border-radius: 999px;
+    color: $text-muted;
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none;
+    transition: color $transition, background-color $transition,
+      border-color $transition;
+
+    &:hover {
+      color: $text;
+      background-color: $surface-2;
+      border-color: $primary;
+    }
   }
 }
