@@ -34,17 +34,14 @@ globalStyle('a', { color: 'inherit', textDecoration: 'none' });
 globalStyle('ul, ol', { listStyle: 'none' });
 globalStyle('img, svg, video', { display: 'block', maxWidth: '100%' });
 
-// ── 앱 셸: 모바일 폭 중앙 카드 (body#body) ───────────────────
+// ── 앱 셸: 캐비닛을 감싸는 페이지 배경 (body#body) ──────────────
 globalStyle('#body', {
   position: 'relative',
-  maxWidth: '560px',
   minHeight: '100vh',
-  margin: '0 auto',
-  background: vars.color.surface,
-  borderInline: `1px solid ${vars.color.border}`,
-  boxShadow: vars.shadow.lg,
-  overflow: 'hidden',
-  transition: `background ${vars.transition.base}, border-color ${vars.transition.base}`,
+  padding: `${vars.space.lg} ${vars.space.md}`,
+  // 상단에서 은은하게 번지는 횃불 광
+  backgroundImage: `radial-gradient(120% 80% at 50% -10%, ${vars.color.glow}, transparent 55%)`,
+  transition: `background ${vars.transition.base}`,
 });
 
 // ── 셀렉션 & 스크롤바 ────────────────────────────────────────

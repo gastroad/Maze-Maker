@@ -3,10 +3,6 @@ import { style } from '@vanilla-extract/css';
 import { vars } from '@styles/theme.css';
 
 export const toggle = style({
-  position: 'absolute',
-  top: vars.space.md,
-  right: vars.space.md,
-  zIndex: 50,
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',

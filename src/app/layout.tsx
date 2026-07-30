@@ -1,7 +1,6 @@
 import { Metadata, Viewport } from 'next';
 
 import { darkTheme, lightTheme } from '@styles/theme.css';
-import ThemeToggle from '@components/atoms/ThemeToggle';
 
 import '@styles/reset.css';
 
@@ -30,10 +29,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>
-      <body id="body">
-        {children}
-        <ThemeToggle />
-      </body>
+      <body id="body">{children}</body>
     </html>
   );
 }

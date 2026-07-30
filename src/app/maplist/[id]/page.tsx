@@ -1,10 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import GameTemplate from '@components/templates/GameTemplate';
+import Cabinet from '@components/templates/Cabinet';
 import PlayMazeGame from '@components/organisms/PlayMazeGame';
 import PlayScoreBoard from '@components/organisms/PlayScoreBoard';
-import PlayMazeController from '@components/organisms/PlayMazeController';
 import { getMazeById } from '@server/service/mazeService';
 
 export const dynamic = 'force-dynamic';
@@ -31,10 +30,13 @@ export default async function MazePlayPage({ params }: PageProps) {
   if (!maze) notFound();
 
   return (
-    <GameTemplate title={maze.title} href="/maplist">
-      <PlayScoreBoard />
+    <Cabinet
+      title={maze.title}
+      back="/maplist"
+      hud={<PlayScoreBoard />}
+      wide
+    >
       <PlayMazeGame maze={maze} />
-      <PlayMazeController />
-    </GameTemplate>
+    </Cabinet>
   );
 }

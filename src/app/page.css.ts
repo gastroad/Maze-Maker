@@ -3,81 +3,80 @@ import { recipe } from '@vanilla-extract/recipes';
 
 import { vars } from '@styles/theme.css';
 
-export const hero = style({
-  textAlign: 'center',
-  marginBottom: '2.75rem',
+export const attract = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: vars.space.md,
+  padding: `${vars.space.md} 0`,
 });
 
 export const tagline = style({
-  marginTop: vars.space.sm,
+  marginTop: `-${vars.space.xs}`,
+  marginBottom: vars.space.sm,
   fontSize: vars.fontSize.md,
-  lineHeight: 1.5,
   color: vars.color.textMuted,
-  letterSpacing: '0.01em',
+  textAlign: 'center',
 });
 
-export const actions = style({
+export const menu = style({
   display: 'flex',
-  flexFlow: 'column',
-  alignItems: 'center',
+  flexDirection: 'column',
   gap: vars.space.sm,
   width: '100%',
+  maxWidth: '320px',
 });
 
-export const authWrap = style({
-  display: 'flex',
-  justifyContent: 'center',
-  marginTop: '1.9rem',
-  width: '100%',
-});
-
-export const linkButton = recipe({
+export const menuItem = recipe({
   base: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    width: 'min(100% - 3rem, 320px)',
-    padding: `0.95rem ${vars.space.md}`,
-    fontSize: vars.fontSize.lg,
-    fontWeight: vars.weight.semibold,
-    letterSpacing: '0.02em',
-    textAlign: 'center',
-    textDecoration: 'none',
+    gap: vars.space.md,
+    padding: `${vars.space.md} ${vars.space.lg}`,
     borderRadius: vars.radius.md,
-    border: '1px solid transparent',
-    transition: `background ${vars.transition.base}, transform ${vars.transition.fast}, box-shadow ${vars.transition.base}, border-color ${vars.transition.base}`,
+    border: `1px solid ${vars.color.border}`,
+    background: vars.color.surface,
+    color: vars.color.text,
+    fontFamily: vars.font.display,
+    fontWeight: vars.weight.bold,
+    fontSize: vars.fontSize.lg,
+    letterSpacing: '0.03em',
+    textDecoration: 'none',
+    transition: `background ${vars.transition.base}, border-color ${vars.transition.base}, transform ${vars.transition.fast}`,
+    selectors: {
+      '&:hover': {
+        background: vars.color.surface3,
+        borderColor: vars.color.primary,
+        transform: 'translateX(3px)',
+      },
+    },
   },
   variants: {
     variant: {
       primary: {
-        color: vars.color.onPrimary,
         background: vars.color.primary,
-        boxShadow: vars.shadow.md,
+        color: vars.color.onPrimary,
+        borderColor: 'transparent',
+        boxShadow: vars.shadow.glow,
         selectors: {
           '&:hover': {
             background: vars.color.primaryHover,
-            transform: 'translateY(-2px)',
-            boxShadow: vars.shadow.lg,
+            transform: 'translateX(3px)',
           },
-          '&:active': {
-            background: vars.color.primaryActive,
-            transform: 'translateY(0)',
-          },
-        },
-      },
-      secondary: {
-        color: vars.color.text,
-        background: 'transparent',
-        borderColor: vars.color.borderStrong,
-        selectors: {
-          '&:hover': {
-            background: vars.color.surface2,
-            borderColor: vars.color.primary,
-          },
-          '&:active': { background: vars.color.surface3 },
         },
       },
     },
   },
-  defaultVariants: { variant: 'primary' },
+});
+
+export const menuIcon = style({
+  color: 'currentColor',
+  opacity: 0.85,
+  fontSize: '0.9em',
+});
+
+export const authWrap = style({
+  marginTop: vars.space.md,
+  display: 'flex',
+  justifyContent: 'center',
 });

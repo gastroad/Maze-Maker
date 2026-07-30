@@ -8,6 +8,7 @@ import MazeBoard from '@components/molecules/MazeBoard';
 import MazePlayer from '@components/atoms/MazePlayer';
 import VirtualJoystick from '@components/molecules/VirtualJoystick';
 import PlayResult from '@components/organisms/PlayResult';
+import PlayMazeController from '@components/organisms/PlayMazeController';
 import useResponsiveHeight from '@hooks/useResponsiveHeight';
 import { MazeType } from '@type/maze';
 
@@ -97,7 +98,11 @@ const PlayMazeGame: FC<PlayMazeGameProps> = ({ maze }) => {
         {status === 'won' && <PlayResult />}
       </div>
 
-      <VirtualJoystick onChange={onJoystick} />
+      <div className={s.deck}>
+        <VirtualJoystick onChange={onJoystick} />
+        <p className={s.hint}>방향키 · WASD · 조이스틱으로 이동</p>
+        <PlayMazeController />
+      </div>
     </div>
   );
 };

@@ -1,15 +1,11 @@
-import { style, globalStyle } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 
 import { vars } from '@styles/theme.css';
 
+// 스테이지 선택 그리드
 export const list = style({
-  color: vars.color.text,
-  border: `1px solid ${vars.color.border}`,
-  borderRadius: vars.radius.md,
-  overflow: 'hidden',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+  gap: vars.space.md,
+  listStyle: 'none',
 });
-
-globalStyle(`.${list} > li`, {
-  borderBottom: `1px solid ${vars.color.border}`,
-});
-globalStyle(`.${list} > li:last-child`, { borderBottom: 'none' });

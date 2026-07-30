@@ -4,9 +4,8 @@ import { vars } from '@styles/theme.css';
 
 export const board = style({
   display: 'flex',
-  justifyContent: 'flex-end',
+  alignItems: 'center',
   gap: vars.space.sm,
-  marginBottom: vars.space.md,
 });
 
 export const item = style({

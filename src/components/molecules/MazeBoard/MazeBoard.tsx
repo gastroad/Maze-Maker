@@ -15,7 +15,7 @@ const MazeBoard: FC<MazeBoardProps> = ({
   end,
   height,
   resolvedPath,
-  handleMazeCellClick = () => {},
+  handleMazeCellClick,
 }) => {
   return (
     <div

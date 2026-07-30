@@ -1,50 +1,45 @@
-import { style, globalStyle } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 
 import { vars } from '@styles/theme.css';
 
-export const item = style({
-  position: 'relative',
-  color: vars.color.text,
-});
+export const item = style({ position: 'relative' });
 
-export const link = style({
-  display: 'block',
-  padding: `${vars.space.md} ${vars.space.md}`,
+export const card = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space.sm,
+  padding: vars.space.sm,
+  borderRadius: vars.radius.md,
+  border: `1px solid ${vars.color.border}`,
+  background: vars.color.surface,
   color: 'inherit',
   textDecoration: 'none',
-  transition: `background ${vars.transition.base}`,
+  transition: `border-color ${vars.transition.base}, transform ${vars.transition.fast}, box-shadow ${vars.transition.base}`,
   selectors: {
-    '&:hover': { background: vars.color.surface2 },
-    '&:active': { background: vars.color.surface3 },
+    '&:hover': {
+      borderColor: vars.color.primary,
+      transform: 'translateY(-2px)',
+      boxShadow: vars.shadow.md,
+    },
   },
 });
 
-export const title = style({
-  textAlign: 'left',
-  fontSize: vars.fontSize.lg,
-  fontWeight: vars.weight.semibold,
-  marginBottom: vars.space.xs,
-});
-
-export const info = style({
-  display: 'grid',
-  gridTemplateColumns: '2fr 1fr',
-  alignItems: 'center',
-  fontSize: vars.fontSize.sm,
-});
-
-globalStyle(`.${info} > :nth-child(1)`, {
-  textAlign: 'left',
-  color: vars.color.textMuted,
-});
-
-globalStyle(`.${info} > :nth-child(2)`, {
-  justifySelf: 'end',
-  padding: '0.15rem 0.55rem',
-  color: vars.color.textMuted,
-  fontSize: vars.fontSize.xs,
-  fontVariantNumeric: 'tabular-nums',
-  background: vars.color.surface2,
+export const thumb = style({
+  borderRadius: vars.radius.sm,
+  overflow: 'hidden',
   border: `1px solid ${vars.color.border}`,
-  borderRadius: vars.radius.pill,
+});
+
+export const title = style({
+  fontSize: vars.fontSize.sm,
+  fontWeight: vars.weight.semibold,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+});
+
+export const meta = style({
+  fontSize: vars.fontSize.xs,
+  color: vars.color.textMuted,
+  fontVariantNumeric: 'tabular-nums',
 });

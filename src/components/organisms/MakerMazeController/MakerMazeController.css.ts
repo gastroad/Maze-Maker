@@ -2,30 +2,23 @@ import { style, globalStyle } from '@vanilla-extract/css';
 
 import { vars } from '@styles/theme.css';
 
+// 보드 옆 세로 툴 레일
 export const controller = style({
-  display: 'grid',
-  gap: '0.6rem',
-  marginTop: vars.space.lg,
-  textAlign: 'center',
-  position: 'fixed',
-  right: '1.5rem',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  width: '220px',
-  '@media': {
-    'screen and (max-width: 1116px)': {
-      position: 'static',
-      transform: 'none',
-      width: 'auto',
-      marginTop: vars.space.lg,
-    },
-  },
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space.sm,
 });
 
-export const row = style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  gap: '0.6rem',
+export const railLabel = style({
+  fontSize: vars.fontSize.xs,
+  letterSpacing: '0.1em',
+  textTransform: 'uppercase',
+  color: vars.color.textMuted,
+  marginBottom: vars.space.xs,
+});
+
+export const submit = style({
+  marginTop: vars.space.sm,
 });
 
 globalStyle(`.${controller} button`, { width: '100%' });

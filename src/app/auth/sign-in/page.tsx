@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import GameTemplate from '@components/templates/GameTemplate';
+import Cabinet from '@components/templates/Cabinet';
 import AuthForm from '@components/organisms/AuthForm';
 
 export const metadata = {
@@ -9,11 +9,11 @@ export const metadata = {
 
 export default function SignInPage() {
   return (
-    <GameTemplate title="로그인" href="/">
+    <Cabinet title="로그인" back="/" screenLabel="Sign In">
       {/* useSearchParams 사용을 위한 Suspense 경계 */}
       <Suspense>
         <AuthForm />
       </Suspense>
-    </GameTemplate>
+    </Cabinet>
   );
 }

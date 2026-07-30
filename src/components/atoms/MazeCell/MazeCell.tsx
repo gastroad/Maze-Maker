@@ -19,7 +19,7 @@ const MARKER: Partial<Record<CellType, string>> = {
 
 const MazeCell: FC<MazeCellProps> = ({
   type,
-  handleMazeCellClick = () => {},
+  handleMazeCellClick,
   col,
   row,
 }) => {
@@ -28,13 +28,18 @@ const MazeCell: FC<MazeCellProps> = ({
     ? { backgroundImage: `url(${marker})` }
     : undefined;
 
+  // 핸들러가 있을 때만 인터랙티브(썸네일 등 비인터랙티브 렌더는 서버 컴포넌트에서도 안전).
+  const onCell = handleMazeCellClick
+    ? () => handleMazeCellClick({ col, row })
+    : undefined;
+
   return (
     <div
       className={cell({ type })}
       style={style}
-      draggable
-      onClick={() => handleMazeCellClick({ col, row })}
-      onDragEnter={() => handleMazeCellClick({ col, row })}
+      draggable={onCell ? true : undefined}
+      onClick={onCell}
+      onDragEnter={onCell}
     />
   );
 };

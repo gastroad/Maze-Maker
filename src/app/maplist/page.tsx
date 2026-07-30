@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import GameTemplate from '@components/templates/GameTemplate';
+import Cabinet from '@components/templates/Cabinet';
 import MazeList from '@components/organisms/MazeList';
 import { getMazes } from '@server/service/mazeService';
 import { auth } from '@server/auth/server';
@@ -20,8 +20,8 @@ export default async function Page() {
     auth.getSession(),
   ]);
   return (
-    <GameTemplate title="Maze List" href="/">
+    <Cabinet title="Stage Select" back="/" screenLabel="Select Stage" wide>
       <MazeList mazeList={mazeList} currentUserId={session?.user?.id} />
-    </GameTemplate>
+    </Cabinet>
   );
 }

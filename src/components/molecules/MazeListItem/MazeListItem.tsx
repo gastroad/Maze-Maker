@@ -2,6 +2,7 @@ import { FC } from 'react';
 import Link from 'next/link';
 
 import { MazeType } from '@type/maze';
+import MazeBoard from '@components/molecules/MazeBoard';
 import DeleteMazeButton from '@components/molecules/DeleteMazeButton';
 
 import * as s from './MazeListItem.css';
@@ -13,17 +14,25 @@ export interface MazeListItemProps {
 }
 const MazeListItem: FC<MazeListItemProps> = ({ maze, currentUserId }) => {
   const isOwner = !!maze.userId && maze.userId === currentUserId;
+  const cols = maze.mazeData[0].length;
+  const rows = maze.mazeData.length;
 
   return (
     <li className={s.item}>
-      <Link className={s.link} href={`/maplist/${maze.id}`}>
-        <p className={s.title}>{maze.title || '제목 없음'}</p>
-        <div className={s.info}>
-          <span>{maze.name || 'unknown'}</span>
-          <span>
-            {maze.mazeData[0].length} * {maze.mazeData.length}
-          </span>
+      <Link className={s.card} href={`/maplist/${maze.id}`}>
+        <div className={s.thumb}>
+          <MazeBoard
+            mazeData={maze.mazeData}
+            start={maze.start}
+            end={maze.end}
+            height={150}
+            resolvedPath={[]}
+          />
         </div>
+        <span className={s.title}>{maze.title || '제목 없음'}</span>
+        <span className={s.meta}>
+          {cols}×{rows} · {maze.name || 'unknown'}
+        </span>
       </Link>
       {isOwner && maze.id && <DeleteMazeButton mazeId={maze.id} />}
     </li>

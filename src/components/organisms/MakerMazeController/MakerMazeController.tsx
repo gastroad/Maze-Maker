@@ -45,44 +45,42 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
 
   return (
     <div className={s.controller}>
-      <div className={s.row}>
-        <Button
-          onClick={handleCurrentType}
-          label="시작 지점"
-          type="secondary"
-          name="start"
-          active={currentType === 'start'}
-        />
-        <Button
-          onClick={handleCurrentType}
-          label="종료 지점"
-          type="secondary"
-          name="end"
-          active={currentType === 'end'}
-        />
-      </div>
-      <div className={s.row}>
-        <Button
-          onClick={handleCurrentType}
-          label="벽(이동 불가)"
-          type="secondary"
-          name="wall"
-          active={currentType === 'wall'}
-        />
-        <Button
-          onClick={handleCurrentType}
-          label="길(이동 가능)"
-          type="secondary"
-          name="road"
-          active={currentType === 'road'}
-        />
-      </div>
+      <span className={s.railLabel}>타일</span>
       <Button
-        onClick={handleResolveButton}
-        label="find & submit"
-        type="primary"
-        name="road"
+        onClick={handleCurrentType}
+        label="시작 지점"
+        type="secondary"
+        name="start"
+        active={currentType === 'start'}
       />
+      <Button
+        onClick={handleCurrentType}
+        label="종료 지점"
+        type="secondary"
+        name="end"
+        active={currentType === 'end'}
+      />
+      <Button
+        onClick={handleCurrentType}
+        label="벽(이동 불가)"
+        type="secondary"
+        name="wall"
+        active={currentType === 'wall'}
+      />
+      <Button
+        onClick={handleCurrentType}
+        label="길(이동 가능)"
+        type="secondary"
+        name="road"
+        active={currentType === 'road'}
+      />
+      <div className={s.submit}>
+        <Button
+          onClick={handleResolveButton}
+          label="저장하기"
+          type="primary"
+        />
+      </div>
     </div>
   );
 };

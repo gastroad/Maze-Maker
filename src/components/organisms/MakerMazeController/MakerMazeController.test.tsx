@@ -45,7 +45,7 @@ describe('MakerMazeController', () => {
 
   it('calls handleResolveButton', async () => {
     const { getByText } = render(<MakerMazeController />);
-    const findAndSubmitButtonElement = getByText('find & submit');
+    const findAndSubmitButtonElement = getByText('저장하기');
 
     fireEvent.click(findAndSubmitButtonElement);
     await waitFor(() => {
