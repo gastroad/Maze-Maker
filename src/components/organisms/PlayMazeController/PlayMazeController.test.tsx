@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import PlayMazeController from './PlayMazeController';
 
@@ -6,9 +5,7 @@ describe('PlayMazeController', () => {
   it('renders reset and answer buttons', () => {
     const { container, getByText } = render(<PlayMazeController />);
 
-    expect(
-      container.querySelector('.play-maze-controller'),
-    ).toBeInTheDocument();
+    expect(container.firstElementChild).toBeInTheDocument();
     expect(getByText('다시하기')).toBeInTheDocument();
     expect(getByText('정답 보기')).toBeInTheDocument();
   });

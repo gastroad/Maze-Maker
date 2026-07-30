@@ -3,13 +3,12 @@ import HomeTemplate, { HomeTemplateProps } from './HomeTemplate';
 
 describe('HomeTemplate', () => {
   it('render HomeTemplate', () => {
-    const { container, getByText, getByRole } = render(
+    const { container, getByText } = render(
       <HomeTemplate>HomeTemplate</HomeTemplate>,
     );
-    const homeTemplateElement = container.querySelector('.home-template');
     const childrenElement = getByText('HomeTemplate');
 
-    expect(homeTemplateElement).toBeInTheDocument();
+    expect(container.firstElementChild).toBeInTheDocument();
     expect(childrenElement).toBeInTheDocument();
   });
 });

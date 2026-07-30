@@ -1,21 +1,14 @@
-import React from 'react';
 import { render } from '@testing-library/react';
 import MazeList from './MazeList';
 import { mockMaze } from '@mock/maze';
 
 describe('MazeList', () => {
-  const mazeList = [mockMaze, mockMaze];
-  const defaultProps = {
-    mazeList,
-  };
+  const defaultProps = { mazeList: [mockMaze, mockMaze] };
 
-  it('render MazeList', () => {
+  it('항목 수만큼 리스트를 렌더한다', () => {
     const { container } = render(<MazeList {...defaultProps} />);
 
-    const mazeListElement = container.querySelector('.maze-list');
-    const mazeListItemElements = container.querySelectorAll('.maze-list-item');
-
-    expect(mazeListElement).toBeInTheDocument();
-    expect(mazeListItemElements.length).toEqual(2);
+    expect(container.firstElementChild?.tagName).toBe('UL');
+    expect(container.querySelectorAll('li')).toHaveLength(2);
   });
 });

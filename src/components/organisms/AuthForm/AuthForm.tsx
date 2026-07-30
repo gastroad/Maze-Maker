@@ -6,7 +6,7 @@ import TextInputWithLabel from '@components/molecules/TextInputWithLabel';
 import Button from '@components/atoms/Button';
 import { authClient } from '@lib/auth/client';
 
-import './AuthForm.scss';
+import * as s from './AuthForm.css';
 
 type Mode = 'signin' | 'signup';
 
@@ -50,8 +50,8 @@ const AuthForm: FC<AuthFormProps> = () => {
   };
 
   return (
-    <div className="auth-form">
-      <div className="auth-form-tabs">
+    <div className={s.form}>
+      <div className={s.tabs}>
         <Button
           type="secondary"
           label="로그인"
@@ -90,7 +90,7 @@ const AuthForm: FC<AuthFormProps> = () => {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      {error && <p className="auth-form-error">{error}</p>}
+      {error && <p className={s.error}>{error}</p>}
 
       <Button
         type="primary"

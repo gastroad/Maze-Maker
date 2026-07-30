@@ -5,7 +5,7 @@ import MazeBoard from '@components/molecules/MazeBoard';
 import useResponsiveHeight from '@hooks/useResponsiveHeight';
 import { useMakerStore } from '@state/maker/store';
 
-import './MakerMazeMaker.scss';
+import { maker } from './MakerMazeMaker.css';
 import { MazeDataType, MazeSizeType } from '@type/maze';
 
 export interface MakerMazeMakerProps {}
@@ -48,7 +48,7 @@ const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
 
   const { elementRef, height } = useResponsiveHeight(0, 1, 1);
   return (
-    <div className="maze-maker" style={{ height: height }} ref={elementRef}>
+    <div className={maker} style={{ height: height }} ref={elementRef}>
       <MazeBoard
         mazeData={mazeData}
         start={startEnd.start}

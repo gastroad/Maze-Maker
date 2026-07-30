@@ -4,7 +4,7 @@ import { FC, ChangeEvent } from 'react';
 import TextInputWithLabel from '@components/molecules/TextInputWithLabel';
 import { useMakerStore } from '@state/maker/store';
 
-import './MakerMazeForm.scss';
+import * as s from './MakerMazeForm.css';
 
 export interface MakerMazeFormProps {}
 const MakerMazeForm: FC<MakerMazeFormProps> = () => {
@@ -26,7 +26,7 @@ const MakerMazeForm: FC<MakerMazeFormProps> = () => {
   };
 
   return (
-    <div className="maze-form">
+    <div className={s.form}>
       <TextInputWithLabel
         value={maze.title}
         type="text"
@@ -41,7 +41,7 @@ const MakerMazeForm: FC<MakerMazeFormProps> = () => {
         placeholder="제작자 이름"
         onChange={handleMaze}
       />
-      <div>
+      <div className={s.sizeRow}>
         <TextInputWithLabel
           value={maze.mazeSize.col}
           type="number"

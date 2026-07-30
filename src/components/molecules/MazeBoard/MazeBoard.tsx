@@ -3,7 +3,7 @@ import { FC } from 'react';
 import MazeCell from '@components/atoms/MazeCell';
 import { MazeBoardType, MazeSizeType } from '@type/maze';
 
-import './MazeBoard.scss';
+import * as s from './MazeBoard.css';
 
 export interface MazeBoardProps extends MazeBoardType {
   height: number;
@@ -19,7 +19,7 @@ const MazeBoard: FC<MazeBoardProps> = ({
 }) => {
   return (
     <div
-      className="maze-board"
+      className={s.board}
       style={{
         height: height,
         gridTemplateRows: `repeat(${mazeData.length}, 1fr)`,
@@ -29,7 +29,7 @@ const MazeBoard: FC<MazeBoardProps> = ({
         return (
           <div
             key={`maze-${i}`}
-            className="maze-board-col"
+            className={s.col}
             style={{
               gridTemplateColumns: `repeat(${col.length}, 1fr)`,
             }}

@@ -11,7 +11,7 @@ import PlayResult from '@components/organisms/PlayResult';
 import useResponsiveHeight from '@hooks/useResponsiveHeight';
 import { MazeType } from '@type/maze';
 
-import './PlayMazeGame.scss';
+import * as s from './PlayMazeGame.css';
 
 export interface PlayMazeGameProps {
   maze: MazeType;
@@ -84,8 +84,8 @@ const PlayMazeGame: FC<PlayMazeGameProps> = ({ maze }) => {
   const playerSize = Math.min(cellW, cellH) * PLAYER_HALF * 2;
 
   return (
-    <div className="maze-game-wrap">
-      <div className="maze-game" style={{ height }} ref={elementRef}>
+    <div className={s.wrap}>
+      <div className={s.game} style={{ height }} ref={elementRef}>
         <MazeBoard
           mazeData={mazeData}
           start={start}

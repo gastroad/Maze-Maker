@@ -1,16 +1,12 @@
 import { FC, ReactNode } from 'react';
 
-import './HomeTemplate.scss';
+import { home } from './HomeTemplate.css';
 
 export interface HomeTemplateProps {
-  children: ReactNode
+  children: ReactNode;
 }
 const HomeTemplate: FC<HomeTemplateProps> = ({ children }) => {
-  return (
-    <div className="home-template">
-      {children}
-    </div>
-  );
+  return <div className={home}>{children}</div>;
 };
 
 export default HomeTemplate;

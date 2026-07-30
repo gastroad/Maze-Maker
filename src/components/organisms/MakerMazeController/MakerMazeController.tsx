@@ -8,7 +8,7 @@ import { findPath } from '@utils/findPath';
 import { postMaze } from '@api/maze';
 import { CellType } from '@type/maze';
 
-import './MakerMazeController.scss';
+import * as s from './MakerMazeController.css';
 
 export interface MakerMazeControllerProps {}
 const MakerMazeController: FC<MakerMazeControllerProps> = () => {
@@ -44,8 +44,8 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
   };
 
   return (
-    <div className="maker-maze-controller">
-      <div>
+    <div className={s.controller}>
+      <div className={s.row}>
         <Button
           onClick={handleCurrentType}
           label="시작 지점"
@@ -61,7 +61,7 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
           active={currentType === 'end'}
         />
       </div>
-      <div>
+      <div className={s.row}>
         <Button
           onClick={handleCurrentType}
           label="벽(이동 불가)"

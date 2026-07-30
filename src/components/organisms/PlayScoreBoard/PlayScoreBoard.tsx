@@ -4,22 +4,22 @@ import { FC, useEffect, useState } from 'react';
 import { useGameStore } from '@state/game/store';
 import { elapsedMs, computeStars } from '@game/mazeEngine';
 
-import './PlayScoreBoard.scss';
+import * as s from './PlayScoreBoard.css';
 
 function formatTime(ms: number): string {
   const total = Math.floor(ms / 1000);
   const m = Math.floor(total / 60);
-  const s = total % 60;
+  const sec = total % 60;
   const cs = Math.floor((ms % 1000) / 10);
-  return `${m}:${String(s).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
+  return `${m}:${String(sec).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
 }
 
 export interface PlayScoreBoardProps {}
 const PlayScoreBoard: FC<PlayScoreBoardProps> = () => {
-  const status = useGameStore((s) => s.status);
-  const startedAt = useGameStore((s) => s.startedAt);
-  const finishedAt = useGameStore((s) => s.finishedAt);
-  const optimal = useGameStore((s) => s.optimal);
+  const status = useGameStore((st) => st.status);
+  const startedAt = useGameStore((st) => st.startedAt);
+  const finishedAt = useGameStore((st) => st.finishedAt);
+  const optimal = useGameStore((st) => st.optimal);
 
   // 진행 중에는 타이머/별점을 짧은 간격으로 다시 그린다.
   const [, forceTick] = useState(0);
@@ -33,17 +33,14 @@ const PlayScoreBoard: FC<PlayScoreBoardProps> = () => {
   const stars = computeStars(time, optimal);
 
   return (
-    <div className="score-board">
-      <div className="score-board-item">
-        <span className="score-board-label">시간</span>
-        <span className="score-board-value">{formatTime(time)}</span>
+    <div className={s.board}>
+      <div className={s.item}>
+        <span className={s.label}>시간</span>
+        <span className={s.value}>{formatTime(time)}</span>
       </div>
-      <div className="score-board-item">
-        <span className="score-board-label">별점</span>
-        <span
-          className="score-board-stars"
-          aria-label={`별점 ${stars} / 3`}
-        >
+      <div className={s.item}>
+        <span className={s.label}>별점</span>
+        <span className={s.starRow} aria-label={`별점 ${stars} / 3`}>
           {[1, 2, 3].map((i) => (
             <span key={i} className={i <= stars ? 'on' : 'off'}>
               ★

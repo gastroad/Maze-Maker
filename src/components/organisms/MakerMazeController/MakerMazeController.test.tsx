@@ -21,12 +21,9 @@ describe('MakerMazeController', () => {
   it('render MakerMazeController', () => {
     const { container, getAllByRole } = render(<MakerMazeController />);
 
-    const mazeControllerElement = container.querySelector(
-      '.maker-maze-controller',
-    );
     const buttonElements = getAllByRole('button');
 
-    expect(mazeControllerElement).toBeInTheDocument();
+    expect(container.firstElementChild).toBeInTheDocument();
     expect(buttonElements.length).toEqual(5);
   });
 

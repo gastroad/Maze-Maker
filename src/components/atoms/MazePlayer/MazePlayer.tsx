@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 import CharURL from '@assets/img/cha.png';
 
-import './MazePlayer.scss';
+import { player } from './MazePlayer.css';
 
 export interface MazePlayerProps {
   /** 플레이어 지름(px). 셀 크기에서 계산해 전달한다. */
@@ -17,7 +17,7 @@ export interface MazePlayerProps {
 const MazePlayer = forwardRef<HTMLDivElement, MazePlayerProps>(
   ({ size }, ref) => (
     <div
-      className="maze-player"
+      className={player}
       ref={ref}
       style={{ width: size, height: size }}
       aria-hidden

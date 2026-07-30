@@ -4,7 +4,7 @@ import { FC } from 'react';
 import Button from '@components/atoms/Button';
 import { useGameStore } from '@state/game/store';
 
-import './PlayMazeController.scss';
+import { controller } from './PlayMazeController.css';
 
 export interface PlayMazeControllerProps {}
 const PlayMazeController: FC<PlayMazeControllerProps> = () => {
@@ -13,7 +13,7 @@ const PlayMazeController: FC<PlayMazeControllerProps> = () => {
   const showAnswer = useGameStore((state) => state.showAnswer);
 
   return (
-    <div className="play-maze-controller">
+    <div className={controller}>
       <Button onClick={reset} label="다시하기" type="secondary" />
       <Button
         onClick={toggleAnswer}

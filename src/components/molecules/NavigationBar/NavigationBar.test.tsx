@@ -1,19 +1,14 @@
-import { render, fireEvent } from '@testing-library/react';
-import NavigationBar, { NavigationBarProps } from './NavigationBar';
-import { mockMaze } from '@mock/maze';
+import { render } from '@testing-library/react';
+import NavigationBar from './NavigationBar';
 
 describe('NavigationBar', () => {
-  it('render NavigationBar', () => {
+  it('children 을 nav 안에 렌더한다', () => {
     const { container, getByText } = render(
       <NavigationBar>
         <>test-text</>
       </NavigationBar>,
     );
-
-    const navigationBarElement = container.querySelector('.navigation-bar');
-    const childrenElement = getByText('test-text');
-
-    expect(navigationBarElement).toBeInTheDocument;
-    expect(childrenElement).toBeInTheDocument;
+    expect(container.firstElementChild?.tagName).toBe('NAV');
+    expect(getByText('test-text')).toBeInTheDocument();
   });
 });

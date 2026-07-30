@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { deleteMaze } from '@api/maze';
 
-import './DeleteMazeButton.scss';
+import { button } from './DeleteMazeButton.css';
 
 export interface DeleteMazeButtonProps {
   mazeId: string;
@@ -28,7 +28,7 @@ const DeleteMazeButton: FC<DeleteMazeButtonProps> = ({ mazeId }) => {
 
   return (
     <button
-      className="delete-maze-button"
+      className={button}
       onClick={handleDelete}
       disabled={deleting}
       aria-label="미로 삭제"

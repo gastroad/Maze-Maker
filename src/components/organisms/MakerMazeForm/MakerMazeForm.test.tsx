@@ -1,16 +1,12 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import MakerMazeForm from './MakerMazeForm';
 
 describe('MakerMazeForm', () => {
-  it('render MakerMazeForm', () => {
+  it('4개의 입력 필드를 렌더한다', () => {
     const { container } = render(<MakerMazeForm />);
 
-    const mazeFormElement = container.querySelector('.maze-form');
-    const inputElements = container.querySelectorAll('.input-txt-label');
-
-    expect(mazeFormElement).toBeInTheDocument();
-    expect(inputElements.length).toEqual(4);
+    expect(container.firstElementChild).toBeInTheDocument();
+    expect(container.querySelectorAll('input')).toHaveLength(4);
   });
   it('calls handleMaze', () => {
     const { getByPlaceholderText } = render(<MakerMazeForm />);

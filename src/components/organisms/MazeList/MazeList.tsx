@@ -3,7 +3,7 @@ import { FC } from 'react';
 import MazeListItem from '@components/molecules/MazeListItem';
 import { MazeType } from '@type/maze';
 
-import './MazeList.scss';
+import { list } from './MazeList.css';
 
 export interface MazeListProps {
   mazeList: MazeType[];
@@ -13,7 +13,7 @@ export interface MazeListProps {
 
 const MazeList: FC<MazeListProps> = ({ mazeList, currentUserId }) => {
   return (
-    <ul className="maze-list">
+    <ul className={list}>
       {mazeList.map((maze, index) => {
         return (
           <MazeListItem

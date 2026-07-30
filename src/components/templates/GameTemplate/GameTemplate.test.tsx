@@ -12,11 +12,10 @@ describe('GameTemplate', () => {
     const { container, getByText, getByRole } = render(
       <GameTemplate {...defaultProps}>GameTemplate</GameTemplate>,
     );
-    const gameTemplateElement = container.querySelector('.game-template');
     const linkElement = getByRole('link');
     const childrenElement = getByText('GameTemplate');
 
-    expect(gameTemplateElement).toBeInTheDocument();
+    expect(container.firstElementChild).toBeInTheDocument();
     expect(linkElement).toBeInTheDocument();
     expect(childrenElement).toBeInTheDocument();
   });

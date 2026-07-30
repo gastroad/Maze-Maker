@@ -1,6 +1,6 @@
 import type { FC, KeyboardEvent, ChangeEvent } from 'react';
 
-import './TextInput.scss';
+import { input } from './TextInput.css';
 
 export interface TextInputProps {
   value: string | number;
@@ -11,7 +11,7 @@ export interface TextInputProps {
   name?: string;
 }
 const TextInput: FC<TextInputProps> = (props) => {
-  return <input className="input-txt" {...props} />;
+  return <input className={input} {...props} />;
 };
 
 export default TextInput;

@@ -1,15 +1,13 @@
 import { FC } from 'react';
-import TextInput, {
-  TextInputProps,
-} from '@components/atoms/TextInput';
+import TextInput, { TextInputProps } from '@components/atoms/TextInput';
 
-import './TextInputWithLabel.scss';
+import * as s from './TextInputWithLabel.css';
 
 export interface TextInputWithLabelProps extends TextInputProps {}
 const TextInputWithLabel: FC<TextInputWithLabelProps> = (props) => {
   return (
-    <div className="input-txt-label">
-      <label>{props.placeholder}</label>
+    <div className={s.wrap}>
+      <label className={s.label}>{props.placeholder}</label>
       <TextInput {...props} />
     </div>
   );

@@ -1,17 +1,14 @@
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import MapTitle, { MapTitleProps } from './MapTitle';
+import { title as titleClass } from './MapTitle.css';
 
 describe('MapTitle', () => {
-  const title = 'test';
-  const defaultProps: MapTitleProps = {
-    title,
-  };
+  const defaultProps: MapTitleProps = { title: 'test' };
 
-  it('render MapTitle', () => {
+  it('제목 텍스트를 렌더한다', () => {
     const { getByText } = render(<MapTitle {...defaultProps} />);
-
-    const mapTitle = getByText(title);
-    expect(mapTitle).toBeInTheDocument();
-    expect(mapTitle).toHaveClass('map-title');
+    const el = getByText('test');
+    expect(el).toBeInTheDocument();
+    expect(el).toHaveClass(titleClass);
   });
 });

@@ -1,7 +1,7 @@
 'use client';
 import { FC, PointerEvent, useRef, useState } from 'react';
 
-import './VirtualJoystick.scss';
+import * as s from './VirtualJoystick.css';
 
 export interface VirtualJoystickProps {
   /** 정규화된 입력 벡터. x = 행축(아래 +), y = 열축(오른쪽 +), 각 -1~1. */
@@ -50,7 +50,7 @@ const VirtualJoystick: FC<VirtualJoystickProps> = ({ onChange }) => {
 
   return (
     <div
-      className="joystick"
+      className={s.joystick}
       ref={baseRef}
       role="group"
       aria-label="이동 조이스틱"
@@ -60,7 +60,7 @@ const VirtualJoystick: FC<VirtualJoystickProps> = ({ onChange }) => {
       onPointerCancel={onUp}
     >
       <div
-        className="joystick-thumb"
+        className={s.thumb}
         style={{ transform: `translate(${thumb.x}px, ${thumb.y}px)` }}
       />
     </div>
