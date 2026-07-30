@@ -1,24 +1,21 @@
-import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import MakerMazeController from './MakerMazeController';
+import { useMakerStore } from '@state/maker/store';
 
-const mockPush = jest.fn();
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
+// vi.mock 은 파일 최상단으로 호이스팅되므로, 팩토리에서 참조할 값은 vi.hoisted 로 만든다.
+const { mockPush } = vi.hoisted(() => ({ mockPush: vi.fn() }));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
 }));
 
-jest.mock('@api/maze', () => {
-  const mockPostMaze = jest.fn();
-  return {
-    postMaze: mockPostMaze.mockResolvedValue({ status: 'success' }),
-  };
-});
+vi.mock('@api/maze', () => ({
+  postMaze: vi.fn().mockResolvedValue({ status: 'success' }),
+}));
 
 describe('MakerMazeController', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('render MakerMazeController', () => {
@@ -33,37 +30,20 @@ describe('MakerMazeController', () => {
     expect(buttonElements.length).toEqual(5);
   });
 
-  it('calls handleCurrentType', () => {
+  it('타입 버튼 클릭 시 currentType 이 해당 타입으로 바뀐다', () => {
     const { getByText } = render(<MakerMazeController />);
 
-    const startButtonElement = getByText('시작 지점');
-    const endButtonElement = getByText('종료 지점');
-    const wallButtonElement = getByText('벽(이동 불가)');
-    const roadButtonElement = getByText('길(이동 가능)');
+    fireEvent.click(getByText('시작 지점'));
+    expect(useMakerStore.getState().currentType).toBe('start');
 
-    fireEvent.click(startButtonElement);
-    expect(startButtonElement).toHaveClass('active');
-    expect(endButtonElement).not.toHaveClass('active');
-    expect(wallButtonElement).not.toHaveClass('active');
-    expect(roadButtonElement).not.toHaveClass('active');
+    fireEvent.click(getByText('종료 지점'));
+    expect(useMakerStore.getState().currentType).toBe('end');
 
-    fireEvent.click(endButtonElement);
-    expect(endButtonElement).toHaveClass('active');
-    expect(startButtonElement).not.toHaveClass('active');
-    expect(wallButtonElement).not.toHaveClass('active');
-    expect(roadButtonElement).not.toHaveClass('active');
+    fireEvent.click(getByText('벽(이동 불가)'));
+    expect(useMakerStore.getState().currentType).toBe('wall');
 
-    fireEvent.click(wallButtonElement);
-    expect(wallButtonElement).toHaveClass('active');
-    expect(endButtonElement).not.toHaveClass('active');
-    expect(startButtonElement).not.toHaveClass('active');
-    expect(roadButtonElement).not.toHaveClass('active');
-
-    fireEvent.click(roadButtonElement);
-    expect(roadButtonElement).toHaveClass('active');
-    expect(endButtonElement).not.toHaveClass('active');
-    expect(wallButtonElement).not.toHaveClass('active');
-    expect(startButtonElement).not.toHaveClass('active');
+    fireEvent.click(getByText('길(이동 가능)'));
+    expect(useMakerStore.getState().currentType).toBe('road');
   });
 
   it('calls handleResolveButton', async () => {

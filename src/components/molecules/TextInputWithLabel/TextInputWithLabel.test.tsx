@@ -4,8 +4,8 @@ import TextInputWithLabel, {
 } from './TextInputWithLabel';
 
 describe('TextInputWithLabel', () => {
-  const onKeyDown = jest.fn();
-  const onChange = jest.fn();
+  const onKeyDown = vi.fn();
+  const onChange = vi.fn();
   const placeholder = 'Enter text';
   const value = '';
   const type = 'text';

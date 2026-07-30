@@ -2,8 +2,8 @@ import { render, fireEvent } from '@testing-library/react';
 import TextInput, { TextInputProps } from './TextInput';
 
 describe('TextInput', () => {
-  const onKeyDown = jest.fn();
-  const onChange = jest.fn();
+  const onKeyDown = vi.fn();
+  const onChange = vi.fn();
   const placeholder = 'Enter text';
   const value = '';
   const type = 'text';

@@ -9,7 +9,7 @@ import {
 
 describe('MazeBoard', () => {
   const height = 400;
-  const handleMazeCellClick = jest.fn();
+  const handleMazeCellClick = vi.fn();
   const start = mockStart;
   const end = mockEnd;
   const mazeData = mockMazeData;

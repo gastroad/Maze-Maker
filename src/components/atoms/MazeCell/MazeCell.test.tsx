@@ -3,7 +3,7 @@ import MazeCell, { MazeCellProps } from './MazeCell';
 
 describe('MazeCell', () => {
   const type = 'start';
-  const handleMazeCellClick = jest.fn();
+  const handleMazeCellClick = vi.fn();
   const defaultProps: MazeCellProps = {
     type,
     handleMazeCellClick,

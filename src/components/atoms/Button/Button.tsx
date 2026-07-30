@@ -1,6 +1,6 @@
 import { FC, MouseEvent } from 'react';
 
-import './Button.scss';
+import { button } from './Button.css';
 
 export interface ButtonProps {
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -18,7 +18,7 @@ const Button: FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className={`btn ${type} ${active ? 'active' : ''}`}
+      className={button({ variant: type, active })}
       onClick={onClick}
       name={name}
     >
