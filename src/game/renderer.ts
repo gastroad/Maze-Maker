@@ -345,6 +345,7 @@ export function drawSideView(
   state: GameState,
   m: ViewMetrics,
   pal: Palette,
+  opts: RenderOptions = {},
 ): void {
   const { width: W, height: H } = m;
   const terrain = sliceTerrain(maze.mazeData, state.axis, state.fixed);
@@ -447,6 +448,58 @@ export function drawSideView(
       Math.PI * 2,
     );
     ctx.fill();
+  }
+
+  // 허브 입구 — 지금 세운 단면에 걸린 것만 보인다.
+  // 이걸 빼면 시점을 전환한 순간 입구가 통째로 사라져, 옆에서 보는 동안에는
+  // 어디로 가고 있는지 알 수 없게 된다.
+  if (opts.portals?.length) {
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `600 ${Math.max(11, Math.round(cw * 0.3))}px ui-monospace, monospace`;
+    for (const portal of opts.portals) {
+      const along =
+        state.axis === 'col'
+          ? state.fixed === portal.at.y
+            ? portal.at.x
+            : -1
+          : state.fixed === portal.at.x
+            ? portal.at.y
+            : -1;
+      if (along < 0) continue;
+
+      const x = originX + (along + 0.5) * cw;
+      if (x < -cw * 3 || x > W + cw * 3) continue;
+      const ground = heightAt(maze.mazeData, portal.at.x, portal.at.y);
+      const y = baseY - ground * chZ;
+      const active =
+        opts.activePortal?.x === portal.at.x &&
+        opts.activePortal?.y === portal.at.y;
+
+      // 발판은 바닥에 눕혀 그린다(옆에서 보면 납작한 타원)
+      ctx.globalAlpha = active ? 0.5 : 0.3;
+      ctx.fillStyle = pal.goal;
+      ctx.beginPath();
+      ctx.ellipse(x, y, cw * 0.42, cw * 0.14, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = pal.goal;
+      ctx.lineWidth = active ? 3 : 2;
+      ctx.beginPath();
+      ctx.ellipse(x, y, cw * 0.42, cw * 0.14, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const labelY = y - cw * 0.9;
+      const width = ctx.measureText(portal.label).width + cw * 0.3;
+      ctx.fillStyle = pal.pit;
+      ctx.globalAlpha = 0.82;
+      ctx.fillRect(x - width / 2, labelY - cw * 0.22, width, cw * 0.44);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = active ? pal.ledgeTop : pal.text;
+      ctx.fillText(portal.label, x, labelY);
+    }
+    ctx.restore();
   }
 
   // 플레이어 — 걷는 중이면 다리가 움직이고, 공중이면 자세가 바뀐다
@@ -796,7 +849,7 @@ export function render(
   opts: RenderOptions = {},
 ): void {
   if (state.mode === 'side') {
-    drawSideView(ctx, maze, state, m, pal);
+    drawSideView(ctx, maze, state, m, pal, opts);
     return;
   }
   drawTopDown(ctx, maze, state, computeCamera(state, maze, m), m, pal, opts);
