@@ -152,6 +152,12 @@ export function drawTopDown(
         ctx.fillRect(sx, sy, cell + 1, cell + 1);
         ctx.fillStyle = d <= JUMP_MAX_HEIGHT ? pal.ledgeTop : pal.wallTop;
         ctx.fillRect(sx, sy, cell + 1, Math.max(2, cell * 0.16));
+        // 최적 경로가 2층을 지나면 지금 층에서는 벽으로 보인다. 여기서 건너뛰면
+        // 정답 표시가 그 구간에서 끊긴다.
+        if (opts.pathSet?.has(`${r},${c}`)) {
+          ctx.fillStyle = pal.resolve;
+          ctx.fillRect(sx, sy, cell + 1, cell + 1);
+        }
         continue;
       }
 

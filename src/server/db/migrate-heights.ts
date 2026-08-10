@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { eq } from 'drizzle-orm';
 import { mazes } from './schema';
 import { ABSOLUTE_WALL, type MazeDataType } from '../../types/maze';
+import { findPath } from '../../utils/findPath';
 
 // mazeData 가 0/1 이분법에서 높이맵(number[][])으로 확장되면서, 기존 미로의
 // 벽(1)이 "점프로 넘을 수 있는 턱"으로 해석되게 됐다. 기존 미로는 넘을 수 없는
@@ -17,6 +18,8 @@ import { ABSOLUTE_WALL, type MazeDataType } from '../../types/maze';
 
 const APPLY = process.argv.includes('--apply');
 const WITH_SAMPLE = process.argv.includes('--with-sample');
+// 높이 규칙이 바뀌면 저장된 최적 경로(별점 기준선)도 다시 계산해야 한다.
+const RECOMPUTE = process.argv.includes('--recompute-paths');
 
 /** 0/1 로만 이루어진 미로인지 — 그렇지 않으면 이미 높이맵이므로 손대지 않는다. */
 function isLegacy(data: MazeDataType): boolean {
@@ -81,6 +84,29 @@ async function main() {
         .update(mazes)
         .set({ mazeData: next })
         .where(eq(mazes.id, row.id));
+    }
+  }
+
+  if (RECOMPUTE) {
+    console.log('\n최적 경로 재계산');
+    for (const row of rows) {
+      // 방금 벽을 올린 미로는 갱신된 데이터로 계산해야 한다
+      const data = isLegacy(row.mazeData)
+        ? raiseWalls(row.mazeData)
+        : row.mazeData;
+      const path = findPath(data, row.start, row.end);
+      const before = row.resolvedPath?.length ?? 0;
+      if (!path) {
+        console.log(`  경로 없음  ${row.title} — 깰 수 없는 미로입니다`);
+        continue;
+      }
+      console.log(`  ${row.title} — ${before}칸 → ${path.length}칸`);
+      if (APPLY) {
+        await db
+          .update(mazes)
+          .set({ resolvedPath: path })
+          .where(eq(mazes.id, row.id));
+      }
     }
   }
 

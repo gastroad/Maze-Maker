@@ -21,15 +21,19 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
   const reset = useMakerStore((state) => state.reset);
 
   const handleResolveButton = async () => {
-    // findPath 는 아직 높이를 모르고 0 인 칸만 지나간다. 높이를 쓴 미로는
-    // 경로를 찾지 못할 수 있으므로, 못 찾아도 저장은 진행한다(별점 기준선만 빈다).
+    // findPath 는 시점 전환과 점프까지 감안해 길을 찾는다. 그래도 없다면
+    // 실제로 깰 수 없는 미로이므로 저장하지 않는다.
     const path = findPath(mazeData, startEnd.start, startEnd.end);
-    setResolvedPath(path ?? []);
+    if (!path) {
+      alert('시작에서 도착까지 갈 수 있는 길이 없습니다.');
+      return;
+    }
+    setResolvedPath(path);
     const body = {
       ...maze,
       mazeData,
       ...startEnd,
-      resolvedPath: path ?? [],
+      resolvedPath: path,
     };
     const res = await postMaze(body);
     if (res.status === 'success') {
