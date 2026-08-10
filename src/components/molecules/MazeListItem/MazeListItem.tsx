@@ -2,7 +2,7 @@ import { FC } from 'react';
 import Link from 'next/link';
 
 import { MazeType } from '@type/maze';
-import MazeBoard from '@components/molecules/MazeBoard';
+import MazeCanvas from '@components/molecules/MazeCanvas';
 import DeleteMazeButton from '@components/molecules/DeleteMazeButton';
 
 import * as s from './MazeListItem.css';
@@ -21,12 +21,11 @@ const MazeListItem: FC<MazeListItemProps> = ({ maze, currentUserId }) => {
     <li className={s.item}>
       <Link className={s.card} href={`/maplist/${maze.id}`}>
         <div className={s.thumb}>
-          <MazeBoard
+          <MazeCanvas
             mazeData={maze.mazeData}
             start={maze.start}
             end={maze.end}
-            height={150}
-            resolvedPath={[]}
+            label={`${maze.title || '제목 없음'} 미리보기`}
           />
         </div>
         <span className={s.title}>{maze.title || '제목 없음'}</span>

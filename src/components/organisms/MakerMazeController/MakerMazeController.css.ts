@@ -17,6 +17,13 @@ export const railLabel = style({
   marginBottom: vars.space.xs,
 });
 
+export const hint = style({
+  fontSize: vars.fontSize.xs,
+  color: vars.color.textFaint,
+  lineHeight: 1.5,
+  margin: `${vars.space.xs} 0 0`,
+});
+
 export const submit = style({
   marginTop: vars.space.sm,
 });

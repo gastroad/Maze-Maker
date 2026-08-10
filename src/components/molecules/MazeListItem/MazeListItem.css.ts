@@ -25,6 +25,7 @@ export const card = style({
 });
 
 export const thumb = style({
+  height: '150px',
   borderRadius: vars.radius.sm,
   overflow: 'hidden',
   border: `1px solid ${vars.color.border}`,

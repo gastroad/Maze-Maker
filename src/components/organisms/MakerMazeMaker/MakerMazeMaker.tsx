@@ -1,12 +1,11 @@
 'use client';
 import { FC, useEffect } from 'react';
 
-import MazeBoard from '@components/molecules/MazeBoard';
-import useResponsiveHeight from '@hooks/useResponsiveHeight';
+import MazeCanvas from '@components/molecules/MazeCanvas';
 import { useMakerStore } from '@state/maker/store';
+import type { MazeDataType } from '@type/maze';
 
 import { maker } from './MakerMazeMaker.css';
-import { MazeDataType, MazeSizeType } from '@type/maze';
 
 export interface MakerMazeMakerProps {}
 const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
@@ -15,47 +14,40 @@ const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
   const startEnd = useMakerStore((state) => state.startEnd);
   const setStartEnd = useMakerStore((state) => state.setStartEnd);
   const maze = useMakerStore((state) => state.maze);
-  const currentType = useMakerStore((state) => state.currentType);
+  const paint = useMakerStore((state) => state.paint);
   const resolvedPath = useMakerStore((state) => state.resolvedPath);
 
+  // 크기가 바뀌면 판을 새로 만든다.
+  // 주의: mazeSize.col 이 행 수, row 가 열 수다(과거 명명이 그대로 DB 에 있다).
   useEffect(() => {
-    const mazeData = new Array(maze.mazeSize.col).fill(0).map(() => {
-      return new Array(maze.mazeSize.row).fill(0);
+    const rows = maze.mazeSize.col;
+    const cols = maze.mazeSize.row;
+    setMazeData(
+      Array.from({ length: rows }, () => Array(cols).fill(0)) as MazeDataType,
+    );
+    // 시작·도착이 새 판 밖으로 나가면 안쪽으로 끌어당긴다
+    const clamp = (p: { x: number; y: number }) => ({
+      x: Math.min(Math.max(p.x, 0), Math.max(rows - 1, 0)),
+      y: Math.min(Math.max(p.y, 0), Math.max(cols - 1, 0)),
     });
-    setMazeData(mazeData);
-  }, [maze.mazeSize]);
+    setStartEnd({
+      start: clamp(startEnd.start),
+      end: clamp(startEnd.end),
+    });
+    // startEnd 를 의존성에 넣으면 클램프가 자기 자신을 다시 트리거한다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maze.mazeSize, setMazeData, setStartEnd]);
 
-  const handleMazeCellClick = ({ col, row }: MazeSizeType) => {
-    let nextMazeData: MazeDataType;
-    switch (currentType) {
-      case 'start':
-      case 'end':
-        setStartEnd({ ...startEnd, [currentType]: { x: col, y: row } });
-        return;
-      case 'wall':
-      case 'road':
-        nextMazeData = mazeData.map((cell, i) =>
-          i === col
-            ? cell.map((value, j) =>
-                j === row ? (currentType === 'wall' ? 1 : 0) : value,
-              )
-            : cell,
-        );
-        setMazeData(nextMazeData);
-        return;
-    }
-  };
-
-  const { elementRef, height } = useResponsiveHeight(0, 1, 1);
   return (
-    <div className={maker} style={{ height: height }} ref={elementRef}>
-      <MazeBoard
+    <div className={maker}>
+      <MazeCanvas
         mazeData={mazeData}
         start={startEnd.start}
         end={startEnd.end}
-        height={height}
         resolvedPath={resolvedPath}
-        handleMazeCellClick={handleMazeCellClick}
+        onPaint={paint}
+        showValues
+        label="미로 편집기"
       />
     </div>
   );

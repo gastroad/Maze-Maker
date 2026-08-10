@@ -1,4 +1,5 @@
 import { vars } from '@styles/theme.css';
+import { ABSOLUTE_WALL, type MazeDataType, type PointType } from '@type/maze';
 
 import {
   sliceTerrain,
@@ -367,6 +368,181 @@ export function drawSideView(
   drawSprite(ctx, SPR_SIDE, px - sw / 2, py - sh, size, state.facing < 0);
 
   drawTorchGlow(ctx, px, py - sh / 2, cw * 3);
+}
+
+// ── 정적 렌더(편집기·썸네일) ─────────────────────────────────
+// 플레이 화면은 "플레이어와의 높이 관계"로 칸을 칠하지만, 편집기와 썸네일에는
+// 플레이어가 없으므로 절대 높이를 그대로 보여준다.
+
+export interface StaticMazeView {
+  mazeData: MazeDataType;
+  start: PointType;
+  end: PointType;
+}
+
+export interface StaticRenderOptions {
+  hover?: { row: number; col: number } | null;
+  /** 셀이 이만큼 크면 높이 숫자를 겹쳐 그린다(편집 중 값 확인용). */
+  showValues?: boolean;
+  pathSet?: ReadonlySet<string>;
+}
+
+/** 미로 전체가 화면에 들어가도록 셀 크기를 맞춘다. */
+export function fitMetrics(
+  mazeData: MazeDataType,
+  width: number,
+  height: number,
+): ViewMetrics {
+  const rows = mazeData.length;
+  const cols = mazeData[0]?.length ?? 1;
+  return {
+    width,
+    height,
+    cell: Math.min(width / cols, height / rows),
+  };
+}
+
+/** 절대 높이에 따른 칸 색. 높을수록 짙어진다. */
+function heightShade(h: number): string {
+  return `rgba(0,0,0,${Math.min(0.55, (h - 1) * 0.13)})`;
+}
+
+export function drawStaticMaze(
+  ctx: CanvasRenderingContext2D,
+  view: StaticMazeView,
+  m: ViewMetrics,
+  pal: Palette,
+  opts: StaticRenderOptions = {},
+): void {
+  const { width: W, height: H, cell } = m;
+  const rows = view.mazeData.length;
+  const cols = view.mazeData[0].length;
+  const originX = (W - cols * cell) / 2;
+  const originY = (H - rows * cell) / 2;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = pal.road;
+  ctx.fillRect(originX, originY, cols * cell, rows * cell);
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const h = view.mazeData[r][c];
+      const sx = originX + c * cell;
+      const sy = originY + r * cell;
+
+      if (h > 0) {
+        ctx.fillStyle = pal.wall;
+        ctx.fillRect(sx, sy, cell + 0.5, cell + 0.5);
+        if (h > 1) {
+          ctx.fillStyle = heightShade(h);
+          ctx.fillRect(sx, sy, cell + 0.5, cell + 0.5);
+        }
+        // 윗면 — 한 번에 오를 수 있는 턱만 다른 색으로 알린다
+        ctx.fillStyle =
+          h <= JUMP_MAX_HEIGHT
+            ? pal.ledgeTop
+            : h >= ABSOLUTE_WALL
+              ? pal.cliff
+              : pal.wallTop;
+        ctx.fillRect(sx, sy, cell + 0.5, Math.max(1, cell * 0.16));
+      } else if (opts.pathSet?.has(`${r},${c}`)) {
+        ctx.fillStyle = pal.resolve;
+        ctx.fillRect(sx, sy, cell + 0.5, cell + 0.5);
+      }
+    }
+  }
+
+  // 격자 — 셀이 너무 작으면 오히려 지저분해진다
+  if (cell >= 6) {
+    ctx.strokeStyle = pal.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let c = 0; c <= cols; c++) {
+      const x = Math.round(originX + c * cell) + 0.5;
+      ctx.moveTo(x, originY);
+      ctx.lineTo(x, originY + rows * cell);
+    }
+    for (let r = 0; r <= rows; r++) {
+      const y = Math.round(originY + r * cell) + 0.5;
+      ctx.moveTo(originX, y);
+      ctx.lineTo(originX + cols * cell, y);
+    }
+    ctx.stroke();
+  }
+
+  // 높이 값 — 편집 중에는 색보다 숫자가 정확하다
+  if (opts.showValues && cell >= 18) {
+    ctx.save();
+    ctx.font = `${Math.round(cell * 0.4)}px ui-monospace, monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = pal.text;
+    ctx.globalAlpha = 0.65;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const h = view.mazeData[r][c];
+        if (h === 0) continue;
+        ctx.fillText(
+          String(h),
+          originX + (c + 0.5) * cell,
+          originY + (r + 0.6) * cell,
+        );
+      }
+    }
+    ctx.restore();
+  }
+
+  // 도착점
+  const gx = originX + (view.end.y + 0.5) * cell;
+  const gy = originY + (view.end.x + 0.5) * cell;
+  ctx.fillStyle = pal.goal;
+  ctx.beginPath();
+  ctx.arc(gx, gy, Math.max(2, cell * 0.3), 0, Math.PI * 2);
+  ctx.fill();
+
+  // 시작점 — 캐릭터를 그대로 세워 두면 어느 쪽이 출발인지 헷갈리지 않는다
+  const px = pixelSize(SPR_TOP, cell * 0.9);
+  const sw = SPR_TOP.w * px;
+  const sh = SPR_TOP.h * px;
+  drawSprite(
+    ctx,
+    SPR_TOP,
+    originX + (view.start.y + 0.5) * cell - sw / 2,
+    originY + (view.start.x + 0.5) * cell - sh / 2,
+    px,
+  );
+
+  // 마우스가 가리키는 칸
+  if (opts.hover) {
+    const { row, col } = opts.hover;
+    if (row >= 0 && col >= 0 && row < rows && col < cols) {
+      ctx.strokeStyle = pal.ledgeTop;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        originX + col * cell + 1,
+        originY + row * cell + 1,
+        cell - 2,
+        cell - 2,
+      );
+    }
+  }
+}
+
+/** 캔버스 좌표를 셀 좌표로 되돌린다(편집기 클릭 처리용). */
+export function cellAt(
+  mazeData: MazeDataType,
+  m: ViewMetrics,
+  x: number,
+  y: number,
+): { row: number; col: number } | null {
+  const rows = mazeData.length;
+  const cols = mazeData[0].length;
+  const originX = (m.width - cols * m.cell) / 2;
+  const originY = (m.height - rows * m.cell) / 2;
+  const col = Math.floor((x - originX) / m.cell);
+  const row = Math.floor((y - originY) / m.cell);
+  if (row < 0 || col < 0 || row >= rows || col >= cols) return null;
+  return { row, col };
 }
 
 function neighbourSlices(maze: MazeLike, state: GameState): number[][] {

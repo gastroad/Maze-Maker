@@ -4,6 +4,16 @@ import { vi } from 'vitest';
 // jest-dom 매처를 Vitest 의 expect 에 등록 (toBeInTheDocument 등)
 import '@testing-library/jest-dom/vitest';
 
+// jsdom 에는 ResizeObserver 가 없다. 캔버스 컴포넌트가 컨테이너 크기 변화를
+// 감지하는 데 쓰므로 아무 것도 하지 않는 스텁으로 채운다.
+if (!globalThis.ResizeObserver) {
+  globalThis.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof ResizeObserver;
+}
+
 // next/image: 정적 import 가 vite 에선 URL 문자열로 오므로, next 전용 props 를 걷어내고
 // 평범한 <img> 로 렌더하도록 전역 모킹한다.
 vi.mock('next/image', () => ({
