@@ -1,3 +1,5 @@
+import { ABSOLUTE_WALL } from '@type/maze';
+
 import {
   createGame,
   step,
@@ -6,9 +8,12 @@ import {
   computeStars,
   getResult,
   keyToDirection,
+  enterSideView,
+  exitSideView,
   SPEED,
   PLAYER_HALF,
   WIN_DIST,
+  JUMP_MAX_HEIGHT,
   type GameState,
   type Input,
   type MazeLike,
@@ -142,13 +147,8 @@ describe('mazeEngine (자유 이동)', () => {
   });
 
   it('getResult 는 시간·par·별점을 종합한다', () => {
-    const won: GameState = {
-      status: 'won',
-      pos: { x: 0.5, y: 0.5 },
-      vel: { x: 0, y: 0 },
-      startedAt: 1000,
-      finishedAt: 1000 + parMs(10),
-    };
+    // getResult 는 타이머 두 필드만 보므로 전체 GameState 를 만들 필요가 없다
+    const won = { startedAt: 1000, finishedAt: 1000 + parMs(10) };
     const r = getResult(won, 10);
     expect(r.timeMs).toBeCloseTo(parMs(10), 6);
     expect(r).toMatchObject({ optimal: 10, stars: 3 });
@@ -160,5 +160,208 @@ describe('mazeEngine (자유 이동)', () => {
     expect(keyToDirection('w')).toBe('up');
     expect(keyToDirection('D')).toBe('right');
     expect(keyToDirection('Enter')).toBeNull();
+  });
+});
+
+describe('높이(z)와 시점 전환', () => {
+  /** 한 줄짜리 미로를 만들고 사이드뷰(행 고정)로 세운 상태를 돌려준다. */
+  function sideOf(
+    heights: number[],
+    startCol = 0,
+  ): { maze: MazeLike; state: GameState } {
+    const maze: MazeLike = {
+      mazeData: [heights],
+      start: { x: 0, y: startCol },
+      end: { x: 9, y: 9 },
+    };
+    // 좌우로 움직이던 중이어야 행이 고정된다(가로축 = 열)
+    return {
+      maze,
+      state: enterSideView({ ...createGame(maze), lastMove: 'h' }),
+    };
+  }
+
+  /** 착지할 때까지 진행한다(점프 입력은 주지 않아 재점프하지 않는다). */
+  function untilGrounded(
+    state: GameState,
+    maze: MazeLike,
+    input: Input,
+    maxFrames = 300,
+  ): GameState {
+    let s = state;
+    for (let i = 0; i < maxFrames; i++) {
+      s = step(s, maze, input, 1 / 60, 1000 + i * 17);
+      if (s.grounded) return s;
+    }
+    return s;
+  }
+
+  describe('탑다운 통과 판정', () => {
+    it('발 높이보다 높은 칸에는 들어가지 못한다', () => {
+      const m: MazeLike = {
+        mazeData: [[0, 1, 0]],
+        start: { x: 0, y: 0 },
+        end: { x: 9, y: 9 },
+      };
+      const s = run(createGame(m), m, { x: 0, y: 1 }, 120);
+      // 높이 1 턱 앞에서 막힌다
+      expect(s.pos.y).toBeLessThanOrEqual(1 - PLAYER_HALF + 1e-3);
+    });
+
+    it('발 높이와 같은 칸은 통과한다 — 2층 통로', () => {
+      const m: MazeLike = {
+        mazeData: [[2, 2, 2]],
+        start: { x: 0, y: 0 },
+        end: { x: 9, y: 9 },
+      };
+      // 높이 2 지형 위에 서 있는 상태(z=2)에서 출발
+      const s = run(createGame(m), m, { x: 0, y: 1 }, 120);
+      expect(s.z).toBe(2);
+      expect(s.pos.y).toBeGreaterThan(2); // 막히지 않고 끝까지 이동
+    });
+
+    it('높은 지대에서 낮은 칸으로 나가면 떨어진다', () => {
+      const m: MazeLike = {
+        mazeData: [[2, 2, 0, 0]],
+        start: { x: 0, y: 0 },
+        end: { x: 9, y: 9 },
+      };
+      const s = run(createGame(m), m, { x: 0, y: 1 }, 180);
+      expect(s.pos.y).toBeGreaterThan(2); // 낮은 칸으로 넘어갔고
+      expect(s.z).toBe(0); // 바닥까지 떨어졌다
+      expect(s.grounded).toBe(true);
+    });
+  });
+
+  describe('사이드뷰 점프', () => {
+    it('바닥에서 점프하면 높이 1 턱을 넘는다', () => {
+      const { maze, state } = sideOf([0, 1, 0, 0]);
+      let s = step(state, maze, { x: -1, y: 1 }, 1 / 60, 1000); // 점프 + 전진
+      for (let i = 0; i < 40; i++) {
+        s = step(s, maze, { x: 0, y: 1 }, 1 / 60, 1000 + i * 17);
+      }
+      expect(s.pos.y).toBeGreaterThan(2); // 턱을 넘어갔다
+    });
+
+    it('바닥에서 점프해도 높이 2 벽은 넘지 못한다', () => {
+      const { maze, state } = sideOf([0, 2, 0, 0]);
+      let s = state;
+      for (let i = 0; i < 60; i++) {
+        // 계속 점프를 시도해도 넘지 못한다
+        s = step(s, maze, { x: -1, y: 1 }, 1 / 60, 1000 + i * 17);
+      }
+      expect(s.pos.y).toBeLessThanOrEqual(1 - PLAYER_HALF + 1e-3);
+    });
+
+    it('점프 최대 높이는 1과 2 사이에 있다 — 맵 디자인의 기준선', () => {
+      expect(JUMP_MAX_HEIGHT).toBeGreaterThan(1);
+      expect(JUMP_MAX_HEIGHT).toBeLessThan(2);
+    });
+
+    it('턱 위에서 다시 점프하면 높이 2에 올라선다 — 계단 지형', () => {
+      const { maze, state } = sideOf([0, 1, 2, 2]);
+      let s = step(state, maze, { x: -1, y: 1 }, 1 / 60, 1000); // 1단 점프
+      s = untilGrounded(s, maze, { x: 0, y: 1 });
+      expect(s.z).toBe(1); // 턱 위에 착지
+
+      s = step(s, maze, { x: -1, y: 1 }, 1 / 60, 2000); // 2단 점프
+      s = untilGrounded(s, maze, { x: 0, y: 1 });
+      expect(s.z).toBe(2); // 2층에 올라섰다
+    });
+
+    it('절대벽(9)은 어떤 높이에서도 넘지 못한다', () => {
+      const { maze, state } = sideOf([0, 1, 2, ABSOLUTE_WALL]);
+      let s = state;
+      // 계속 점프하며 전진 — 계단을 타고 오를 수 있는 데까지 오른다
+      for (let i = 0; i < 300; i++) {
+        s = step(s, maze, { x: -1, y: 1 }, 1 / 60, 1000 + i * 17);
+      }
+      s = untilGrounded(s, maze, { x: 0, y: 1 });
+      expect(s.z).toBeLessThanOrEqual(2); // 절대벽 위에는 올라설 수 없고
+      expect(s.pos.y).toBeLessThanOrEqual(3 - PLAYER_HALF + 1e-3); // 넘어가지도 못한다
+    });
+  });
+
+  describe('시점 전환 왕복', () => {
+    const open: MazeLike = {
+      mazeData: [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+      ],
+      start: { x: 1, y: 1 },
+      end: { x: 9, y: 9 },
+    };
+
+    it('탑다운 → 사이드뷰 → 탑다운 후 좌표가 보존된다', () => {
+      const s0 = createGame(open);
+      const side = enterSideView(s0);
+      const back = exitSideView(side);
+      expect(back).not.toBeNull();
+      expect(back!.mode).toBe('top');
+      expect(back!.pos).toEqual(s0.pos);
+    });
+
+    it('세로로 움직이던 중이면 열이, 가로로 움직이던 중이면 행이 고정된다', () => {
+      expect(enterSideView({ ...createGame(open), lastMove: 'v' }).axis).toBe(
+        'col',
+      );
+      expect(enterSideView({ ...createGame(open), lastMove: 'h' }).axis).toBe(
+        'row',
+      );
+    });
+
+    it('공중에서는 탑다운으로 돌아갈 수 없다', () => {
+      const side = enterSideView(createGame(open));
+      expect(exitSideView({ ...side, grounded: false })).toBeNull();
+    });
+
+    it('높은 위치에서 복귀하면 그 높이가 유지된다 — 2층으로 가는 유일한 길', () => {
+      const m: MazeLike = {
+        mazeData: [[0, 1, 2, 2, 2]],
+        start: { x: 0, y: 0 },
+        end: { x: 9, y: 9 },
+      };
+      // 계단(0→1→2)을 올라 높이 2 위에 선다
+      let s = enterSideView({ ...createGame(m), lastMove: 'h' });
+      s = step(s, m, { x: -1, y: 1 }, 1 / 60, 1000);
+      s = untilGrounded(s, m, { x: 0, y: 1 });
+      s = step(s, m, { x: -1, y: 1 }, 1 / 60, 2000);
+      s = untilGrounded(s, m, { x: 0, y: 1 });
+      expect(s.z).toBe(2);
+      expect(s.grounded).toBe(true);
+
+      const back = exitSideView(s);
+      expect(back).not.toBeNull();
+      expect(back!.mode).toBe('top');
+      expect(back!.z).toBe(2); // 높이를 안고 탑다운으로 복귀
+    });
+  });
+
+  describe('도착 판정', () => {
+    it('다른 층으로 도착점 위를 지나가면 승리하지 않는다', () => {
+      const m: MazeLike = {
+        mazeData: [[2, 2, 2]],
+        start: { x: 0, y: 0 },
+        end: { x: 0, y: 2 }, // 도착점의 지형 높이는 2
+      };
+      // 같은 높이(2)로 도착하면 승리한다
+      const s = run(createGame(m), m, { x: 0, y: 1 }, 200);
+      expect(s.z).toBe(2);
+      expect(s.status).toBe('won');
+    });
+
+    it('도착점과 높이가 다르면 승리 판정이 나지 않는다', () => {
+      const m: MazeLike = {
+        mazeData: [[0, 0, 0]],
+        start: { x: 0, y: 0 },
+        end: { x: 0, y: 2 },
+      };
+      const near = createGame(m);
+      // 도착점 바로 위를 2층 높이로 지나가는 상태
+      const flying = { ...near, pos: { x: 0.5, y: 2.5 }, z: 2 };
+      const s = step(flying, m, { x: 0, y: 0 }, 1 / 60, 1000);
+      expect(s.status).not.toBe('won');
+    });
   });
 });
