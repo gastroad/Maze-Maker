@@ -73,6 +73,52 @@ const EPS = 1e-6;
 /** 사이드뷰 화면에 담을 높이 범위(셀). 점프 여유가 보이도록 잡는다. */
 const SIDE_Z_SPAN = 4.4;
 
+// ── 무엇을 그릴지 정하는 판단 ────────────────────────────────
+// 캔버스에 칠하는 일과 "무엇을 칠할지 정하는 일"을 갈라 둔다. 판단이 순수
+// 함수로 나와 있으면 브라우저를 띄우지 않고도 단위 테스트로 잡을 수 있다.
+// (사이드뷰에서 입구가 통째로 사라졌던 버그가 딱 이 자리에서 났었다.)
+
+/** 칸이 지금 플레이어에게 어떻게 보이는가. */
+export type CellLook = 'wall' | 'floor' | 'pit';
+
+export function cellLook(height: number, z: number): CellLook {
+  if (height > z + EPS) return 'wall';
+  if (height > z - EPS) return 'floor';
+  return 'pit';
+}
+
+/** 그 벽이 한 번의 점프로 오를 수 있는 턱인가(윗면 색을 가른다). */
+export function isClimbable(height: number, z: number): boolean {
+  const d = height - z;
+  return d > EPS && d <= JUMP_MAX_HEIGHT;
+}
+
+export interface PortalOnSlice<T> {
+  portal: T;
+  /** 세운 단면 위에서의 가로 위치. */
+  along: number;
+}
+
+/**
+ * 지금 세운 단면에 걸린 입구만 고른다. 사이드뷰는 미로의 한 줄만 보여 주므로
+ * 다른 줄에 있는 입구는 화면에 없어야 한다.
+ */
+export function portalsOnSlice<T extends { at: PointType }>(
+  axis: SliceAxis,
+  fixed: number,
+  portals: readonly T[],
+): PortalOnSlice<T>[] {
+  const result: PortalOnSlice<T>[] = [];
+  for (const portal of portals) {
+    if (axis === 'col') {
+      if (portal.at.y === fixed) result.push({ portal, along: portal.at.x });
+    } else if (portal.at.x === fixed) {
+      result.push({ portal, along: portal.at.y });
+    }
+  }
+  return result;
+}
+
 function clamp(v: number, lo: number, hi: number): number {
   return lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, v));
 }
@@ -161,15 +207,15 @@ export function drawTopDown(
   for (let r = r0; r <= r1; r++) {
     for (let c = c0; c <= c1; c++) {
       const h = maze.mazeData[r][c];
-      const d = h - state.z; // 내 발 기준 상대 높이
+      const look = cellLook(h, state.z);
       const sx = originX + c * cell;
       const sy = originY + r * cell;
 
-      if (d > EPS) {
+      if (look === 'wall') {
         // 내 발보다 높은 칸 = 막힘. 한 번에 오를 수 있는 턱은 다른 색으로 알린다.
         ctx.fillStyle = pal.wall;
         ctx.fillRect(sx, sy, cell + 1, cell + 1);
-        ctx.fillStyle = d <= JUMP_MAX_HEIGHT ? pal.ledgeTop : pal.wallTop;
+        ctx.fillStyle = isClimbable(h, state.z) ? pal.ledgeTop : pal.wallTop;
         ctx.fillRect(sx, sy, cell + 1, Math.max(2, cell * 0.16));
         continue;
       }
@@ -178,8 +224,8 @@ export function drawTopDown(
       ctx.fillStyle = pal.road;
       ctx.fillRect(sx, sy, cell + 1, cell + 1);
 
-      if (d < -EPS) {
-        ctx.fillStyle = depthShade(-d);
+      if (look === 'pit') {
+        ctx.fillStyle = depthShade(state.z - h);
         ctx.fillRect(sx, sy, cell + 1, cell + 1);
         // 위쪽 이웃이 더 높으면 그 경계가 절벽면이다. 이 선 하나가
         // "여기서 떨어진다"를 알려 준다.
@@ -458,17 +504,11 @@ export function drawSideView(
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = `600 ${Math.max(11, Math.round(cw * 0.3))}px ui-monospace, monospace`;
-    for (const portal of opts.portals) {
-      const along =
-        state.axis === 'col'
-          ? state.fixed === portal.at.y
-            ? portal.at.x
-            : -1
-          : state.fixed === portal.at.x
-            ? portal.at.y
-            : -1;
-      if (along < 0) continue;
-
+    for (const { portal, along } of portalsOnSlice(
+      state.axis,
+      state.fixed,
+      opts.portals,
+    )) {
       const x = originX + (along + 0.5) * cw;
       if (x < -cw * 3 || x > W + cw * 3) continue;
       const ground = heightAt(maze.mazeData, portal.at.x, portal.at.y);

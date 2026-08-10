@@ -156,7 +156,35 @@ export default function useGameLoop({
       raf = requestAnimationFrame(frame);
     };
 
+    // 탭이 숨겨지면 루프를 멈춘다. 안 멈추면 보이지도 않는 화면을 계속 그리며
+    // CPU 를 쓰고, 무엇보다 기록 타이머가 실제 시각 기준이라 잠깐 자리를 비운
+    // 사이 시간이 그대로 쌓인다. 돌아올 때 자리를 비운 만큼 시작 시각을 밀어
+    // 준다.
+    let pausedAt: number | null = null;
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+        pausedAt = Date.now();
+        return;
+      }
+      if (pausedAt !== null) {
+        const away = Date.now() - pausedAt;
+        const cur = stateRef.current;
+        if (cur.startedAt !== null && cur.finishedAt === null) {
+          stateRef.current = { ...cur, startedAt: cur.startedAt + away };
+        }
+        pausedAt = null;
+      }
+      last = performance.now(); // 멈춰 있던 시간이 dt 로 몰리지 않게
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
     raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, [maze, runId, canvasRef, getInput, optionsRef, onFrame, syncRun]);
 }
