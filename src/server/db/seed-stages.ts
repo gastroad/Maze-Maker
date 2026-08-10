@@ -77,8 +77,8 @@ const LEVELS: LevelSpec[] = [
   {
     level: 3,
     teaches: '턱(1) 도입 — 시점 전환이 처음 필요',
-    minSize: 9,
-    maxSize: 17,
+    minSize: 11,
+    maxSize: 19,
     upperFloor: false,
     // 2개에서 시작해 10개까지 — 지름길이 점점 늘어난다
     ledgesAt: (stage) => 2 + Math.floor(((stage - 1) * 8) / 9),
@@ -87,8 +87,8 @@ const LEVELS: LevelSpec[] = [
   {
     level: 4,
     teaches: '2층 통로 도입',
-    minSize: 11,
-    maxSize: 19,
+    minSize: 13,
+    maxSize: 21,
     upperFloor: true,
     // 초반 세 판은 2층 하나만 놓고 배우게 하고, 뒤로 갈수록 턱을 다시 섞는다
     ledgesAt: (stage) => Math.floor((stage - 1) / 3),
@@ -97,11 +97,13 @@ const LEVELS: LevelSpec[] = [
   {
     level: 5,
     teaches: '2층 + 턱 조합, 가장 큼',
-    minSize: 13,
-    maxSize: 23,
+    minSize: 15,
+    maxSize: 25,
     upperFloor: true,
-    ledgesAt: (stage) => 3 + (stage - 1),
-    branchesAt: (stage) => 1 + Math.floor((stage - 1) / 3),
+    // 지름길이 많으면 최단 경로가 오히려 짧아진다. 최종 레벨이 레벨 4보다
+    // 쉬워지지 않도록 턱과 곁가지를 아껴 쓴다.
+    ledgesAt: (stage) => 2 + Math.floor((stage - 1) / 2),
+    branchesAt: (stage) => 1 + Math.floor((stage - 1) / 4),
   },
 ];
 
