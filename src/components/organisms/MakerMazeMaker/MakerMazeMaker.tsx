@@ -18,10 +18,8 @@ const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
   const resolvedPath = useMakerStore((state) => state.resolvedPath);
 
   // 크기가 바뀌면 판을 새로 만든다.
-  // 주의: mazeSize.col 이 행 수, row 가 열 수다(과거 명명이 그대로 DB 에 있다).
   useEffect(() => {
-    const rows = maze.mazeSize.col;
-    const cols = maze.mazeSize.row;
+    const { rows, cols } = maze.mazeSize;
     setMazeData(
       Array.from({ length: rows }, () => Array(cols).fill(0)) as MazeDataType,
     );

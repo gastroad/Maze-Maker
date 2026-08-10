@@ -20,7 +20,8 @@ export async function generateMetadata({
   if (!maze) return { title: 'maze-maker' };
   return {
     title: `${maze.title}-${maze.name}`,
-    description: `${maze.mazeSize.col} * ${maze.mazeSize.row} 미로를 플레이하실수 있습니다.`,
+    // 표시는 목록 카드와 같은 순서(가로 × 세로)로 맞춘다
+    description: `${maze.mazeSize.cols} × ${maze.mazeSize.rows} 미로를 플레이하실수 있습니다.`,
   };
 }
 

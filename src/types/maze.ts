@@ -22,9 +22,15 @@ export type MazeDataType = MazeDataValueType[][];
  */
 export const ABSOLUTE_WALL = 9;
 
+/**
+ * 미로의 크기. 과거에는 `{ col, row }` 였는데 col 이 행 수, row 가 열 수라
+ * 읽는 사람마다 뒤집어 해석하는 문제가 있어 이름을 바로잡았다.
+ * 실제 크기의 원천은 언제나 mazeData 이고(`mazeData.length` × `mazeData[0].length`)
+ * 이 값은 그와 일치해야 한다.
+ */
 export interface MazeSizeType {
-  col: number;
-  row: number;
+  rows: number; // 행 수 = mazeData.length
+  cols: number; // 열 수 = mazeData[0].length
 }
 export interface PointType {
   x: number;

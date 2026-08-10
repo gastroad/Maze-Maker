@@ -2,7 +2,7 @@ import { MazeDataType, MazeSizeType, MazeType, PointType } from "@type/maze"
 
 export const mockStart: PointType = { x: 0, y: 0 }
 export const mockEnd: PointType = { x: 4, y: 4 }
-export const mockMazeSize: MazeSizeType = { col: 5, row: 5 }
+export const mockMazeSize: MazeSizeType = { rows: 5, cols: 5 }
 export const mockResolvedPath: PointType[] = [
     { x: 0, y: 0 },
     { x: 1, y: 0 },

@@ -38,7 +38,7 @@ function raiseWalls(data: MazeDataType): MazeDataType {
 const SAMPLE_MAZE = {
   title: '2층 통로',
   name: 'system',
-  mazeSize: { col: 8, row: 8 },
+  mazeSize: { rows: 8, cols: 8 },
   start: { x: 1, y: 1 },
   end: { x: 6, y: 6 },
   mazeData: [

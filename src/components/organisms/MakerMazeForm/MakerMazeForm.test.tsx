@@ -29,17 +29,17 @@ describe('MakerMazeForm', () => {
   it('크기는 입력 중에는 확정되지 않고 blur 에서 확정된다', () => {
     const { getByPlaceholderText } = render(<MakerMazeForm />);
     const col = getByPlaceholderText(/미로 행/) as HTMLInputElement;
-    const before = useMakerStore.getState().maze.mazeSize.col;
+    const before = useMakerStore.getState().maze.mazeSize.rows;
 
     // "10" 을 치는 도중의 "1" 로 판이 새로 만들어지면 안 된다
     fireEvent.change(col, { target: { value: '1' } });
-    expect(useMakerStore.getState().maze.mazeSize.col).toBe(before);
+    expect(useMakerStore.getState().maze.mazeSize.rows).toBe(before);
 
     fireEvent.change(col, { target: { value: '10' } });
-    expect(useMakerStore.getState().maze.mazeSize.col).toBe(before);
+    expect(useMakerStore.getState().maze.mazeSize.rows).toBe(before);
 
     fireEvent.blur(col);
-    expect(useMakerStore.getState().maze.mazeSize.col).toBe(10);
+    expect(useMakerStore.getState().maze.mazeSize.rows).toBe(10);
   });
 
   it('앞에 0 이 붙은 값은 확정 시 정규화된다', () => {
@@ -50,7 +50,7 @@ describe('MakerMazeForm', () => {
     fireEvent.blur(col);
 
     expect(col.value).toBe('7');
-    expect(useMakerStore.getState().maze.mazeSize.col).toBe(7);
+    expect(useMakerStore.getState().maze.mazeSize.rows).toBe(7);
   });
 
   it('범위를 벗어난 값은 확정 시 상·하한으로 당겨진다', () => {
@@ -60,22 +60,22 @@ describe('MakerMazeForm', () => {
 
     fireEvent.change(col, { target: { value: '999' } });
     fireEvent.blur(col);
-    expect(useMakerStore.getState().maze.mazeSize.col).toBe(MAX_SIZE);
+    expect(useMakerStore.getState().maze.mazeSize.rows).toBe(MAX_SIZE);
 
     fireEvent.change(row, { target: { value: '0' } });
     fireEvent.blur(row);
-    expect(useMakerStore.getState().maze.mazeSize.row).toBe(MIN_SIZE);
+    expect(useMakerStore.getState().maze.mazeSize.cols).toBe(MIN_SIZE);
   });
 
   it('빈 값으로 두고 나가면 직전 값으로 되돌아간다', () => {
     const { getByPlaceholderText } = render(<MakerMazeForm />);
     const col = getByPlaceholderText(/미로 행/) as HTMLInputElement;
-    const before = useMakerStore.getState().maze.mazeSize.col;
+    const before = useMakerStore.getState().maze.mazeSize.rows;
 
     fireEvent.change(col, { target: { value: '' } });
     fireEvent.blur(col);
 
     expect(col.value).toBe(String(before));
-    expect(useMakerStore.getState().maze.mazeSize.col).toBe(before);
+    expect(useMakerStore.getState().maze.mazeSize.rows).toBe(before);
   });
 });

@@ -10,7 +10,7 @@ import * as s from './MakerMazeForm.css';
 export const MIN_SIZE = 2;
 export const MAX_SIZE = 100;
 
-type SizeField = 'col' | 'row';
+type SizeField = 'rows' | 'cols';
 
 export interface MakerMazeFormProps {}
 const MakerMazeForm: FC<MakerMazeFormProps> = () => {
@@ -21,8 +21,8 @@ const MakerMazeForm: FC<MakerMazeFormProps> = () => {
   // 잠깐 확정되어 판이 통째로 새로 만들어지기 때문이다. 입력 중에는 문자열
   // 초안만 들고 있다가 blur(또는 Enter)에 한 번만 확정한다.
   const [draft, setDraft] = useState(() => ({
-    col: String(maze.mazeSize.col),
-    row: String(maze.mazeSize.row),
+    rows: String(maze.mazeSize.rows),
+    cols: String(maze.mazeSize.cols),
   }));
 
   const handleText = (e: ChangeEvent<HTMLInputElement>) => {
@@ -74,27 +74,27 @@ const MakerMazeForm: FC<MakerMazeFormProps> = () => {
       />
       <div className={s.sizeRow}>
         <TextInputWithLabel
-          value={draft.col}
+          value={draft.rows}
           type="number"
-          name="col"
+          name="rows"
           placeholder={`미로 행 (${MIN_SIZE}~${MAX_SIZE})`}
           min={MIN_SIZE}
           max={MAX_SIZE}
           inputMode="numeric"
           onChange={handleSizeChange}
-          onBlur={() => commitSize('col')}
+          onBlur={() => commitSize('rows')}
           onKeyDown={handleSizeKeyDown}
         />
         <TextInputWithLabel
-          value={draft.row}
+          value={draft.cols}
           type="number"
-          name="row"
+          name="cols"
           placeholder={`미로 열 (${MIN_SIZE}~${MAX_SIZE})`}
           min={MIN_SIZE}
           max={MAX_SIZE}
           inputMode="numeric"
           onChange={handleSizeChange}
-          onBlur={() => commitSize('row')}
+          onBlur={() => commitSize('cols')}
           onKeyDown={handleSizeKeyDown}
         />
       </div>

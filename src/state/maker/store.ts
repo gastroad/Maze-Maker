@@ -52,7 +52,7 @@ interface MakerState {
 }
 
 const createInitialState = () => ({
-  maze: { title: '', name: '', mazeSize: { row: 5, col: 5 } },
+  maze: { title: '', name: '', mazeSize: { rows: 5, cols: 5 } },
   brush: { kind: 'start' } as MakerBrush,
   mazeData: Array.from({ length: 5 }, () => Array(5).fill(0)) as MazeDataType,
   startEnd: { start: { x: 0, y: 0 }, end: { x: 4, y: 4 } },
