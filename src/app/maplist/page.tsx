@@ -1,26 +1,26 @@
 import { Metadata } from 'next';
 import Cabinet from '@components/templates/Cabinet';
 import MazeList from '@components/organisms/MazeList';
-import { getMazes } from '@server/service/mazeService';
+import { getUserMazes } from '@server/service/mazeService';
 import { auth } from '@server/auth/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const mazeList = await getMazes();
+  const mazeList = await getUserMazes();
   return {
-    title: 'maze-maker-maplist',
-    description: `${mazeList.length}개의 미로를 만나보실수 있습니다.`,
+    title: '유저 미로 · maze-maker',
+    description: `유저가 만든 미로 ${mazeList.length}개를 만나보실수 있습니다.`,
   };
 }
 
 export default async function Page() {
   const [mazeList, { data: session }] = await Promise.all([
-    getMazes(),
+    getUserMazes(),
     auth.getSession(),
   ]);
   return (
-    <Cabinet title="Stage Select" back="/" screenLabel="Select Stage" wide>
+    <Cabinet title="유저 미로" back="/play" screenLabel="User Maps" wide>
       <MazeList mazeList={mazeList} currentUserId={session?.user?.id} />
     </Cabinet>
   );

@@ -22,10 +22,16 @@ const PlayResult: FC<PlayResultProps> = () => {
   const finishedAt = useGameStore((st) => st.finishedAt);
   const optimal = useGameStore((st) => st.optimal);
   const reset = useGameStore((st) => st.reset);
+  const maze = useGameStore((st) => st.maze);
 
   const time = elapsedMs({ startedAt, finishedAt });
   const stars = computeStars(time, optimal);
   const par = parMs(optimal);
+
+  // 공식 스테이지는 방금 나온 레벨로, 유저 미로는 유저 미로 목록으로 돌아간다.
+  const isStage = maze?.level != null;
+  const backHref = isStage ? `/play/${maze!.level}` : '/maplist';
+  const backLabel = isStage ? '스테이지 선택' : '목록으로';
 
   return (
     <div className={s.result} role="dialog" aria-label="게임 결과">
@@ -55,8 +61,8 @@ const PlayResult: FC<PlayResultProps> = () => {
           <button className={button({ variant: 'secondary' })} onClick={reset}>
             다시하기
           </button>
-          <Link className={button({ variant: 'primary' })} href="/maplist">
-            목록으로
+          <Link className={button({ variant: 'primary' })} href={backHref}>
+            {backLabel}
           </Link>
         </div>
       </div>

@@ -49,6 +49,9 @@ export interface MazeInfoType {
   mazeSize: MazeSizeType;
   // 미로를 만든 Neon Auth 사용자 id. 로그인 없이 생성된(기존) 미로는 없음.
   userId?: string;
+  // 공식 스테이지의 좌표(1-1 ~ 5-10). 없으면 유저가 만든 미로다.
+  level?: number;
+  stage?: number;
 }
 
 export type MazeType = MazeBoardType & MazeInfoType;

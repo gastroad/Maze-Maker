@@ -24,6 +24,12 @@ interface UseGameLoopArgs {
   getInput: () => Input;
   /** 렌더 옵션(정답 경로 등). ref 로 받아 토글해도 루프를 재시작하지 않는다. */
   optionsRef?: RefObject<RenderOptions>;
+  /**
+   * 매 프레임 물리 상태를 넘긴다. 허브가 입구 도달을 판정하는 데 쓴다 —
+   * 도착점이 하나뿐인 스테이지와 달리 허브에는 목적지가 여럿이라
+   * 엔진의 승리 판정만으로는 부족하다.
+   */
+  onFrame?: (state: GameState) => void;
 }
 
 const MAX_DT = 0.05; // 탭 전환 등으로 프레임이 크게 벌어져도 벽 관통 방지
@@ -40,6 +46,7 @@ export default function useGameLoop({
   canvasRef,
   getInput,
   optionsRef,
+  onFrame,
 }: UseGameLoopArgs) {
   const runId = useGameStore((s) => s.runId);
   const syncRun = useGameStore((s) => s.syncRun);
@@ -122,6 +129,7 @@ export default function useGameLoop({
 
       const s = step(stateRef.current, maze, getInput(), dt, Date.now());
       stateRef.current = s;
+      onFrame?.(s);
 
       const pal = paletteRef.current;
       if (pal) render(ctx, maze, s, metrics(), pal, optionsRef?.current ?? {});
@@ -150,5 +158,5 @@ export default function useGameLoop({
 
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
-  }, [maze, runId, canvasRef, getInput, optionsRef, syncRun]);
+  }, [maze, runId, canvasRef, getInput, optionsRef, onFrame, syncRun]);
 }

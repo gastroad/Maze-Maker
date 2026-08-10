@@ -49,6 +49,13 @@ export interface RenderOptions {
    * 축 이름을 글로 읽고 머릿속에서 변환하는 단계를 없애기 위한 것.
    */
   previewAxis?: SliceAxis | null;
+  /** 허브의 입구들. 이름표를 달아 어디로 가는 문인지 보여 준다. */
+  portals?: readonly {
+    at: PointType;
+    label: string;
+  }[];
+  /** 지금 밟고 있는 입구(강조용). */
+  activePortal?: PointType | null;
 }
 
 export interface ViewMetrics {
@@ -247,6 +254,50 @@ export function drawTopDown(
       ctx.strokeRect(originX + fixed * cell, 0, cell, H);
     } else {
       ctx.strokeRect(0, originY + fixed * cell, W, cell);
+    }
+    ctx.restore();
+  }
+
+  // 허브 입구 — 발판과 이름표.
+  // 전환 미리보기 오버레이보다 뒤에 그린다. 앞에 그리면 어둡게 덮여
+  // 축을 고르는 동안 어느 입구가 어디인지 보이지 않는다.
+  if (opts.portals?.length) {
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `600 ${Math.max(11, Math.round(cell * 0.3))}px ${'ui-monospace, monospace'}`;
+    for (const portal of opts.portals) {
+      const x = originX + (portal.at.y + 0.5) * cell;
+      const y = originY + (portal.at.x + 0.5) * cell;
+      if (x < -cell * 3 || x > W + cell * 3) continue;
+      if (y < -cell * 3 || y > H + cell * 3) continue;
+
+      const active =
+        opts.activePortal?.x === portal.at.x &&
+        opts.activePortal?.y === portal.at.y;
+
+      ctx.globalAlpha = active ? 0.45 : 0.25;
+      ctx.fillStyle = pal.goal;
+      ctx.beginPath();
+      ctx.arc(x, y, cell * (active ? 0.46 : 0.38), 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = pal.goal;
+      ctx.lineWidth = active ? 3 : 2;
+      ctx.beginPath();
+      ctx.arc(x, y, cell * 0.34, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 이름표는 발판 위쪽에 — 캐릭터에 가리지 않게
+      const labelY = y - cell * 0.72;
+      const width = ctx.measureText(portal.label).width + cell * 0.3;
+      ctx.fillStyle = pal.pit;
+      ctx.globalAlpha = 0.82;
+      ctx.fillRect(x - width / 2, labelY - cell * 0.22, width, cell * 0.44);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = active ? pal.ledgeTop : pal.text;
+      ctx.fillText(portal.label, x, labelY);
     }
     ctx.restore();
   }

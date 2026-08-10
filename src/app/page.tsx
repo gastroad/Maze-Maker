@@ -14,10 +14,8 @@ export default function Page() {
           직접 그리고, 방향키로 플레이하는 미로 게임
         </p>
         <nav className={s.menu}>
-          <Link
-            className={s.menuItem({ variant: 'primary' })}
-            href="/maplist"
-          >
+          {/* PLAY 는 목록이 아니라 허브로 — 누르면 바로 조작이 시작된다 */}
+          <Link className={s.menuItem({ variant: 'primary' })} href="/play">
             <span className={s.menuIcon} aria-hidden>
               ▶
             </span>

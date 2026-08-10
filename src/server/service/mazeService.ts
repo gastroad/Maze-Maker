@@ -4,6 +4,10 @@ import type { MazeRow } from '../db/schema';
 import {
   findAllMazes,
   findMazeById,
+  findStage,
+  findStages,
+  findStagesByLevel,
+  findUserMazes,
   insertMaze,
   deleteMazeById,
 } from '../repository/mazeRepository';
@@ -21,6 +25,8 @@ function toMazeType(row: MazeRow): MazeType {
     end: row.end,
     resolvedPath: row.resolvedPath ?? undefined,
     userId: row.userId ?? undefined,
+    level: row.level ?? undefined,
+    stage: row.stage ?? undefined,
   };
 }
 
@@ -35,6 +41,33 @@ export class MazeOwnershipError extends Error {
 export async function getMazes(): Promise<MazeType[]> {
   const rows = await findAllMazes();
   return rows.map(toMazeType);
+}
+
+/** 유저가 만든 미로만 — 목록 화면이 캠페인과 섞이지 않게 한다. */
+export async function getUserMazes(): Promise<MazeType[]> {
+  const rows = await findUserMazes();
+  return rows.map(toMazeType);
+}
+
+/** 공식 스테이지 전체(1-1 → 5-10). 허브가 입구를 배치할 때 쓴다. */
+export async function getStages(): Promise<MazeType[]> {
+  const rows = await findStages();
+  return rows.map(toMazeType);
+}
+
+/** 한 레벨의 스테이지 목록. */
+export async function getStagesByLevel(level: number): Promise<MazeType[]> {
+  const rows = await findStagesByLevel(level);
+  return rows.map(toMazeType);
+}
+
+/** 좌표로 스테이지 하나. */
+export async function getStage(
+  level: number,
+  stage: number,
+): Promise<MazeType | undefined> {
+  const row = await findStage(level, stage);
+  return row ? toMazeType(row) : undefined;
 }
 
 export async function getMazeById(id: string): Promise<MazeType | undefined> {
