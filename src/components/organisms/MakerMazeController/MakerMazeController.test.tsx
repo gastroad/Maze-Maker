@@ -24,8 +24,8 @@ describe('MakerMazeController', () => {
     const buttonElements = getAllByRole('button');
 
     expect(container.firstElementChild).toBeInTheDocument();
-    // 시작·종료 + 높이 브러시 5개 + 저장
-    expect(buttonElements.length).toEqual(2 + HEIGHT_BRUSHES.length + 1);
+    // 시작·종료 + 높이 브러시 5개 + 경로 확인 + 저장
+    expect(buttonElements.length).toEqual(2 + HEIGHT_BRUSHES.length + 2);
   });
 
   it('지점 버튼을 누르면 브러시가 해당 지점으로 바뀐다', () => {

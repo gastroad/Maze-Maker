@@ -4,7 +4,9 @@ import { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useGameStore } from '@state/game/store';
 import { type Input } from '@game/mazeEngine';
 import type { RenderOptions } from '@game/renderer';
+import { toPathSteps } from '@utils/findPath';
 import useGameLoop from '@hooks/useGameLoop';
+import AxisFlipButtons from '@components/molecules/AxisFlipButtons';
 import VirtualJoystick from '@components/molecules/VirtualJoystick';
 import PlayResult from '@components/organisms/PlayResult';
 import PlayMazeController from '@components/organisms/PlayMazeController';
@@ -26,16 +28,20 @@ const PlayMazeGame: FC<PlayMazeGameProps> = ({ maze }) => {
   const setNotice = useGameStore((st) => st.setNotice);
   const showAnswer = useGameStore((st) => st.showAnswer);
   const requestFlip = useGameStore((st) => st.requestFlip);
+  const previewAxis = useGameStore((st) => st.previewAxis);
 
-  // 정답 경로는 좌표 집합으로 한 번만 만들어 둔다(셀마다 배열을 훑지 않도록)
-  const pathSet = useMemo(
-    () => new Set(maze.resolvedPath?.map((p) => `${p.x},${p.y}`) ?? []),
-    [maze.resolvedPath],
+  // 저장된 좌표에 높이·등반 여부를 붙여 둔다(선으로 긋고 전환 지점을 표시하기 위해)
+  const path = useMemo(
+    () => toPathSteps(maze.mazeData, maze.start, maze.resolvedPath ?? []),
+    [maze.mazeData, maze.start, maze.resolvedPath],
   );
   const optionsRef = useRef<RenderOptions>({});
   useEffect(() => {
-    optionsRef.current = { pathSet: showAnswer ? pathSet : undefined };
-  }, [showAnswer, pathSet]);
+    optionsRef.current = {
+      path: showAnswer ? path : undefined,
+      previewAxis,
+    };
+  }, [showAnswer, path, previewAxis]);
 
   // 입력 소스: 키보드(불리언) 우선, 없으면 조이스틱(아날로그)
   const keysRef = useRef({ up: false, down: false, left: false, right: false });
@@ -129,9 +135,10 @@ const PlayMazeGame: FC<PlayMazeGameProps> = ({ maze }) => {
         <VirtualJoystick onChange={onJoystick} />
         <p className={s.hint}>
           {mode === 'side'
-            ? '← → 이동 · ↑ 점프 · Space 로 복귀'
+            ? '← → 이동 · ↑ 점프'
             : '방향키 · WASD · 조이스틱으로 이동'}
         </p>
+        <AxisFlipButtons />
         <PlayMazeController />
       </div>
     </div>

@@ -185,3 +185,21 @@ export function findPath(
 ): PointType[] | null {
   return findPathDetailed(maze, start, end)?.map((step) => step.point) ?? null;
 }
+
+/**
+ * 저장된 좌표 배열(DB 의 resolvedPath)에 높이와 등반 여부를 붙인다.
+ * 경로를 다시 계산하지 않고도 선으로 그릴 수 있게 해 준다.
+ */
+export function toPathSteps(
+  maze: MazeDataType,
+  start: PointType,
+  points: readonly PointType[],
+): PathStep[] {
+  let prevHeight = maze[start.x]?.[start.y] ?? 0;
+  return points.map((point) => {
+    const height = maze[point.x]?.[point.y] ?? 0;
+    const step: PathStep = { point, height, climbed: height > prevHeight };
+    prevHeight = height;
+    return step;
+  });
+}

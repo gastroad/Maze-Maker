@@ -107,7 +107,9 @@ export default function useGameLoop({
         handledFlip = nonce;
         const cur = stateRef.current;
         if (cur.mode === 'top') {
-          stateRef.current = enterSideView(cur);
+          // 축을 지정하지 않았으면(단축키 등) 예전처럼 마지막 이동 방향을 쓴다
+          const axis = useGameStore.getState().flipAxis ?? undefined;
+          stateRef.current = enterSideView(cur, axis);
         } else {
           const back = exitSideView(cur);
           if (back) stateRef.current = back;

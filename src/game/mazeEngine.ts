@@ -412,15 +412,23 @@ export function step(
     : stepTop(state, maze, input, dt, now);
 }
 
+/** 지금 위치에서 그 축으로 전환하면 세워질 줄의 인덱스. */
+export function sliceIndexFor(state: GameState, axis: SliceAxis): number {
+  return axis === 'col' ? Math.floor(state.pos.y) : Math.floor(state.pos.x);
+}
+
 /**
- * 탑다운 → 사이드뷰. 마지막 이동 방향과 직교하는 축을 고정해 그 줄을 세운다.
+ * 탑다운 → 사이드뷰. 어느 축으로 자를지는 호출자가 정한다 — 마지막 이동 방향으로
+ * 자동 결정하면 플레이어가 자기 직전 입력을 기억해야 해서 예측이 어렵다.
+ * axis 를 생략하면 예전처럼 마지막 이동 방향을 쓴다.
  * 고정 축 좌표는 칸 중심으로 정렬해 복귀 시 좌표가 어긋나지 않게 한다.
  */
-export function enterSideView(state: GameState): GameState {
+export function enterSideView(
+  state: GameState,
+  axis: SliceAxis = state.lastMove === 'v' ? 'col' : 'row',
+): GameState {
   if (state.mode === 'side') return state;
-  const axis: SliceAxis = state.lastMove === 'v' ? 'col' : 'row';
-  const fixed =
-    axis === 'col' ? Math.floor(state.pos.y) : Math.floor(state.pos.x);
+  const fixed = sliceIndexFor(state, axis);
   const pos: Vec2 =
     axis === 'col'
       ? { x: state.pos.x, y: fixed + 0.5 }

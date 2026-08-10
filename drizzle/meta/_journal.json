@@ -15,6 +15,13 @@
       "when": 1785291757774,
       "tag": "0001_mean_shiver_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786344567103,
+      "tag": "0002_aromatic_guardian",
+      "breakpoints": true
     }
   ]
 }

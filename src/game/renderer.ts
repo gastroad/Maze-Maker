@@ -1,15 +1,25 @@
 import { vars } from '@styles/theme.css';
 import { ABSOLUTE_WALL, type MazeDataType, type PointType } from '@type/maze';
+import type { PathStep } from '@utils/findPath';
 
 import {
   sliceTerrain,
+  sliceIndexFor,
   heightAt,
   JUMP_MAX_HEIGHT,
   PLAYER_HALF,
   type GameState,
   type MazeLike,
+  type SliceAxis,
 } from './mazeEngine';
-import { SPR_SIDE, SPR_TOP, drawSprite, pixelSize } from './sprites';
+import {
+  SPR_SIDE,
+  SPR_TOP,
+  drawSprite,
+  pixelSize,
+  sideFrame,
+  topBobPixels,
+} from './sprites';
 
 // 셀 하나당 DOM 노드를 만들면 100x100 에서 10,000 개가 되어 버틸 수 없다.
 // 여기서는 캔버스에 그리되 카메라가 보는 범위만 그린다(뷰포트 컬링).
@@ -32,11 +42,13 @@ export interface Palette {
 }
 
 export interface RenderOptions {
+  /** 정답 경로. 편집기와 같은 방식으로 얇은 선을 긋는다. */
+  path?: readonly PathStep[];
   /**
-   * 정답 경로를 `"행,열"` 키 집합으로 받는다. 셀마다 배열을 훑으면
-   * 100x100 에서 렌더 한 번에 수백만 번 비교가 되므로 조회는 O(1)이어야 한다.
+   * 전환 버튼에 손이 올라갔을 때, 그 축으로 자르면 어느 줄이 세워지는지 미리 보여 준다.
+   * 축 이름을 글로 읽고 머릿속에서 변환하는 단계를 없애기 위한 것.
    */
-  pathSet?: ReadonlySet<string>;
+  previewAxis?: SliceAxis | null;
 }
 
 export interface ViewMetrics {
@@ -152,12 +164,6 @@ export function drawTopDown(
         ctx.fillRect(sx, sy, cell + 1, cell + 1);
         ctx.fillStyle = d <= JUMP_MAX_HEIGHT ? pal.ledgeTop : pal.wallTop;
         ctx.fillRect(sx, sy, cell + 1, Math.max(2, cell * 0.16));
-        // 최적 경로가 2층을 지나면 지금 층에서는 벽으로 보인다. 여기서 건너뛰면
-        // 정답 표시가 그 구간에서 끊긴다.
-        if (opts.pathSet?.has(`${r},${c}`)) {
-          ctx.fillStyle = pal.resolve;
-          ctx.fillRect(sx, sy, cell + 1, cell + 1);
-        }
         continue;
       }
 
@@ -182,10 +188,6 @@ export function drawTopDown(
         ctx.fillRect(sx, sy, cell + 1, cell + 1);
       }
 
-      if (opts.pathSet?.has(`${r},${c}`)) {
-        ctx.fillStyle = pal.resolve;
-        ctx.fillRect(sx, sy, cell + 1, cell + 1);
-      }
     }
   }
 
@@ -205,6 +207,11 @@ export function drawTopDown(
   }
   ctx.stroke();
 
+  // 정답 경로 — 편집기와 같은 표현
+  if (opts.path?.length) {
+    strokePathLine(ctx, opts.path, maze.start, originX, originY, cell);
+  }
+
   // 도착점
   const gx = originX + (maze.end.y + 0.5) * cell;
   const gy = originY + (maze.end.x + 0.5) * cell;
@@ -218,6 +225,30 @@ export function drawTopDown(
     ctx.arc(gx, gy, cell * 0.46, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
+  }
+
+  // 전환 미리보기 — 세워질 줄만 남기고 나머지를 덮어 어느 단면인지 한눈에 보인다
+  if (opts.previewAxis) {
+    const fixed = sliceIndexFor(state, opts.previewAxis);
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    if (opts.previewAxis === 'col') {
+      const x = originX + fixed * cell;
+      ctx.fillRect(0, 0, Math.max(0, x), H);
+      ctx.fillRect(x + cell, 0, W, H);
+    } else {
+      const y = originY + fixed * cell;
+      ctx.fillRect(0, 0, W, Math.max(0, y));
+      ctx.fillRect(0, y + cell, W, H);
+    }
+    ctx.strokeStyle = pal.ledgeTop;
+    ctx.lineWidth = 2;
+    if (opts.previewAxis === 'col') {
+      ctx.strokeRect(originX + fixed * cell, 0, cell, H);
+    } else {
+      ctx.strokeRect(0, originY + fixed * cell, W, cell);
+    }
+    ctx.restore();
   }
 
   // 플레이어
@@ -249,7 +280,9 @@ export function drawTopDown(
   const sw = SPR_TOP.w * size;
   const sh = SPR_TOP.h * size;
   const lift = air * cell * 0.5; // 높이 있으면 살짝 띄워 보인다
-  drawSprite(ctx, SPR_TOP, px - sw / 2, py - sh / 2 - lift, size);
+  const speed = Math.hypot(state.vel.x, state.vel.y);
+  const bob = topBobPixels(speed, performance.now()) * size;
+  drawSprite(ctx, SPR_TOP, px - sw / 2, py - sh / 2 - lift - bob, size);
 
   drawTorchGlow(ctx, px, py - lift, cell * 2.4);
 }
@@ -365,13 +398,18 @@ export function drawSideView(
     ctx.fill();
   }
 
-  // 플레이어
-  const size = pixelSize(SPR_SIDE, cw * 0.72);
-  const sw = SPR_SIDE.w * size;
-  const sh = SPR_SIDE.h * size;
+  // 플레이어 — 걷는 중이면 다리가 움직이고, 공중이면 자세가 바뀐다
+  const spr = sideFrame(
+    Math.abs(state.vel.y),
+    state.grounded,
+    performance.now(),
+  );
+  const size = pixelSize(spr, cw * 0.72);
+  const sw = spr.w * size;
+  const sh = spr.h * size;
   const px = originX + along * cw;
   const py = baseY - state.z * chZ;
-  drawSprite(ctx, SPR_SIDE, px - sw / 2, py - sh, size, state.facing < 0);
+  drawSprite(ctx, spr, px - sw / 2, py - sh, size, state.facing < 0);
 
   drawTorchGlow(ctx, px, py - sh / 2, cw * 3);
 }
@@ -390,7 +428,58 @@ export interface StaticRenderOptions {
   hover?: { row: number; col: number } | null;
   /** 셀이 이만큼 크면 높이 숫자를 겹쳐 그린다(편집 중 값 확인용). */
   showValues?: boolean;
-  pathSet?: ReadonlySet<string>;
+  /**
+   * 최적 경로. 칸을 덮으면 지형 색을 가려 편집을 방해하므로 선으로 긋는다.
+   * 시점 전환이 필요한 지점은 따로 표시한다.
+   */
+  path?: readonly PathStep[];
+}
+
+/** 경로선 색 — 흙빛 배경 위에서 확실히 떨어져 보이도록 고정색을 쓴다. */
+const PATH_LINE = '#4db3d4';
+const PATH_CLIMB = '#ffb347';
+
+/**
+ * 최적 경로를 셀보다 얇은 선으로 긋고, 시점 전환이 필요한 지점을 찍는다.
+ * 칸을 통째로 덮으면 지형 색을 가리고, 높이 조건을 붙이면 2층 구간에서
+ * 표시가 끊긴다 — 선은 두 문제를 모두 피한다.
+ * 편집기와 플레이 화면이 같은 표현을 쓰도록 여기 한 곳에 둔다.
+ */
+function strokePathLine(
+  ctx: CanvasRenderingContext2D,
+  path: readonly PathStep[],
+  start: PointType,
+  originX: number,
+  originY: number,
+  cell: number,
+): void {
+  const cx = (p: PointType) => originX + (p.y + 0.5) * cell;
+  const cy = (p: PointType) => originY + (p.x + 0.5) * cell;
+  ctx.save();
+  ctx.strokeStyle = PATH_LINE;
+  ctx.lineWidth = Math.max(1.5, cell * 0.14);
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.globalAlpha = 0.9;
+  ctx.beginPath();
+  ctx.moveTo(cx(start), cy(start));
+  for (const step of path) ctx.lineTo(cx(step.point), cy(step.point));
+  ctx.stroke();
+
+  ctx.fillStyle = PATH_CLIMB;
+  for (const step of path) {
+    if (!step.climbed) continue;
+    ctx.beginPath();
+    ctx.arc(
+      cx(step.point),
+      cy(step.point),
+      Math.max(2, cell * 0.2),
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
+  }
+  ctx.restore();
 }
 
 /** 미로 전체가 화면에 들어가도록 셀 크기를 맞춘다. */
@@ -451,9 +540,6 @@ export function drawStaticMaze(
               ? pal.cliff
               : pal.wallTop;
         ctx.fillRect(sx, sy, cell + 0.5, Math.max(1, cell * 0.16));
-      } else if (opts.pathSet?.has(`${r},${c}`)) {
-        ctx.fillStyle = pal.resolve;
-        ctx.fillRect(sx, sy, cell + 0.5, cell + 0.5);
       }
     }
   }
@@ -498,6 +584,10 @@ export function drawStaticMaze(
     ctx.restore();
   }
 
+  if (opts.path?.length) {
+    strokePathLine(ctx, opts.path, view.start, originX, originY, cell);
+  }
+
   // 도착점
   const gx = originX + (view.end.y + 0.5) * cell;
   const gy = originY + (view.end.x + 0.5) * cell;
@@ -534,6 +624,72 @@ export function drawStaticMaze(
   }
 }
 
+/**
+ * 편집기용 단면 미리보기 — 지금 커서가 놓인 줄이 사이드뷰에서 어떻게 보일지
+ * 그린다. 지형을 만들면서 단면을 확인할 수 있어야 좋은 플랫포머 구간이 나온다.
+ * 플레이 화면과 달리 플레이어가 없으므로 절대 높이만 표시한다.
+ */
+export function drawSlicePreview(
+  ctx: CanvasRenderingContext2D,
+  terrain: readonly number[],
+  m: ViewMetrics,
+  pal: Palette,
+  marker?: number | null,
+): void {
+  const { width: W, height: H } = m;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = pal.sky;
+  ctx.fillRect(0, 0, W, H);
+  if (terrain.length === 0) return;
+
+  const cw = W / terrain.length;
+  // 가장 높은 지형까지 담되, 점프 여유가 보이도록 한 칸 더 잡는다
+  const maxH = Math.max(1, ...terrain.filter((h) => h < ABSOLUTE_WALL));
+  const span = maxH + 1.6;
+  const chZ = H / span;
+  const baseY = H - chZ * 0.4;
+
+  ctx.fillStyle = pal.ground;
+  ctx.fillRect(0, baseY, W, H - baseY);
+
+  for (let i = 0; i < terrain.length; i++) {
+    const h = terrain[i];
+    if (h <= 0) continue;
+    const drawH = Math.min(h, span);
+    const top = baseY - drawH * chZ;
+    const sx = i * cw;
+    ctx.fillStyle = pal.ground;
+    ctx.fillRect(sx, top, cw + 0.5, H - top);
+    ctx.fillStyle =
+      h <= JUMP_MAX_HEIGHT
+        ? pal.ledgeTop
+        : h >= ABSOLUTE_WALL
+          ? pal.cliff
+          : pal.wallTop;
+    ctx.fillRect(sx, top, cw + 0.5, Math.max(2, chZ * 0.08));
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillRect(sx, top, 1, H - top);
+  }
+
+  // 바닥에서 한 번에 오를 수 있는 높이 — 이 선 위로는 계단이 필요하다
+  ctx.save();
+  ctx.strokeStyle = pal.guide;
+  ctx.globalAlpha = 0.4;
+  ctx.setLineDash([4, 5]);
+  ctx.beginPath();
+  ctx.moveTo(0, baseY - JUMP_MAX_HEIGHT * chZ);
+  ctx.lineTo(W, baseY - JUMP_MAX_HEIGHT * chZ);
+  ctx.stroke();
+  ctx.restore();
+
+  // 커서가 놓인 칸
+  if (marker != null && marker >= 0 && marker < terrain.length) {
+    ctx.strokeStyle = pal.ledgeTop;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(marker * cw, 0, cw, H);
+  }
+}
+
 /** 캔버스 좌표를 셀 좌표로 되돌린다(편집기 클릭 처리용). */
 export function cellAt(
   mazeData: MazeDataType,
@@ -559,18 +715,24 @@ function neighbourSlices(maze: MazeLike, state: GameState): number[][] {
     .map((i) => sliceTerrain(maze.mazeData, state.axis, i));
 }
 
-/** 횃불 발광 — 던전 분위기이자 플레이어 위치를 눈에 잡아 두는 장치. */
+/**
+ * 횃불 발광 — 던전 분위기이자 플레이어 위치를 눈에 잡아 두는 장치.
+ * 불꽃이 흔들리듯 반경을 미세하게 진동시킨다.
+ */
 function drawTorchGlow(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   radius: number,
 ): void {
-  const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
-  g.addColorStop(0, 'rgba(255,150,50,0.16)');
+  const t = performance.now();
+  const flicker = 1 + Math.sin(t / 120) * 0.06 + Math.sin(t / 47) * 0.03;
+  const r = radius * flicker;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, `rgba(255,150,50,${0.16 * flicker})`);
   g.addColorStop(1, 'rgba(255,150,50,0)');
   ctx.fillStyle = g;
-  ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+  ctx.fillRect(x - r, y - r, r * 2, r * 2);
 }
 
 /** 현재 시점에 맞는 한 프레임을 그린다. */

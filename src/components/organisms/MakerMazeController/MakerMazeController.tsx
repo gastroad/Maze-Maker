@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import Button from '@components/atoms/Button';
 import { useMakerStore, HEIGHT_BRUSHES } from '@state/maker/store';
-import { findPath } from '@utils/findPath';
+import { findPath, findPathDetailed } from '@utils/findPath';
 import { postMaze } from '@api/maze';
 
 import * as s from './MakerMazeController.css';
@@ -17,8 +17,24 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
   const setBrush = useMakerStore((state) => state.setBrush);
   const mazeData = useMakerStore((state) => state.mazeData);
   const setResolvedPath = useMakerStore((state) => state.setResolvedPath);
+  const setPathPreview = useMakerStore((state) => state.setPathPreview);
+  const pathPreview = useMakerStore((state) => state.pathPreview);
   const startEnd = useMakerStore((state) => state.startEnd);
   const reset = useMakerStore((state) => state.reset);
+
+  // 편집할 때마다 A* 를 돌리면 큰 미로에서 무거우므로 눌렀을 때만 계산한다.
+  const handleCheckPath = () => {
+    if (pathPreview) {
+      setPathPreview(null);
+      return;
+    }
+    const path = findPathDetailed(mazeData, startEnd.start, startEnd.end);
+    if (!path) {
+      alert('시작에서 도착까지 갈 수 있는 길이 없습니다.');
+      return;
+    }
+    setPathPreview(path);
+  };
 
   const handleResolveButton = async () => {
     // findPath 는 시점 전환과 점프까지 감안해 길을 찾는다. 그래도 없다면
@@ -75,6 +91,12 @@ const MakerMazeController: FC<MakerMazeControllerProps> = () => {
       </p>
 
       <div className={s.submit}>
+        <Button
+          onClick={handleCheckPath}
+          label={pathPreview ? '경로 숨기기' : '경로 확인'}
+          type="secondary"
+          active={!!pathPreview}
+        />
         <Button onClick={handleResolveButton} label="저장하기" type="primary" />
       </div>
     </div>

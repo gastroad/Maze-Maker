@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { PathStep } from '@utils/findPath';
 import {
   ABSOLUTE_WALL,
   type MazeSizeType,
@@ -41,6 +42,7 @@ interface MakerState {
   mazeData: MazeDataType;
   startEnd: StartEndStateType;
   resolvedPath: PointType[];
+  pathPreview: PathStep[] | null;
   setMaze: (maze: MazeStateType) => void;
   setBrush: (brush: MakerBrush) => void;
   /** 한 칸에 현재 브러시를 적용한다. 드래그 페인팅이 매 프레임 호출한다. */
@@ -48,6 +50,8 @@ interface MakerState {
   setMazeData: (mazeData: MazeDataType) => void;
   setStartEnd: (startEnd: StartEndStateType) => void;
   setResolvedPath: (resolvedPath: PointType[]) => void;
+  /** '경로 확인'으로 계산한 최적 경로. 편집 중 표시용이라 저장과는 별개다. */
+  setPathPreview: (pathPreview: PathStep[] | null) => void;
   reset: () => void;
 }
 
@@ -57,6 +61,7 @@ const createInitialState = () => ({
   mazeData: Array.from({ length: 5 }, () => Array(5).fill(0)) as MazeDataType,
   startEnd: { start: { x: 0, y: 0 }, end: { x: 4, y: 4 } },
   resolvedPath: [] as PointType[],
+  pathPreview: null as PathStep[] | null,
 });
 
 export const useMakerStore = create<MakerState>((set) => ({
@@ -73,25 +78,33 @@ export const useMakerStore = create<MakerState>((set) => ({
       if (brush.kind === 'start') {
         const { start } = s.startEnd;
         if (start.x === row && start.y === col) return s;
-        return { startEnd: { ...s.startEnd, start: { x: row, y: col } } };
+        return {
+          startEnd: { ...s.startEnd, start: { x: row, y: col } },
+          pathPreview: null,
+        };
       }
       if (brush.kind === 'end') {
         const { end } = s.startEnd;
         if (end.x === row && end.y === col) return s;
-        return { startEnd: { ...s.startEnd, end: { x: row, y: col } } };
+        return {
+          startEnd: { ...s.startEnd, end: { x: row, y: col } },
+          pathPreview: null,
+        };
       }
 
       // 같은 값이면 상태를 바꾸지 않는다 — 드래그 중 매 프레임 리렌더를 막는다.
       if (s.mazeData[row][col] === brush.value) return s;
+      // 지형이 바뀌면 계산해 둔 경로는 더 이상 유효하지 않다
       // 바뀐 행만 새로 만든다(기존에는 클릭 한 번에 전체 배열을 복사했다).
       const next = s.mazeData.slice();
       next[row] = next[row].slice();
       next[row][col] = brush.value;
-      return { mazeData: next };
+      return { mazeData: next, pathPreview: null };
     }),
 
   setMazeData: (mazeData) => set({ mazeData }),
   setStartEnd: (startEnd) => set({ startEnd }),
   setResolvedPath: (resolvedPath) => set({ resolvedPath }),
+  setPathPreview: (pathPreview) => set({ pathPreview }),
   reset: () => set(createInitialState()),
 }));

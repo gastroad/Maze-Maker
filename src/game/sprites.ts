@@ -49,8 +49,9 @@ export const SPR_TOP = sprite([
   '.............',
 ]);
 
-/** 사이드뷰 — 오른쪽을 바라본 옆모습. 왼쪽은 좌우 반전으로 재사용한다. */
-export const SPR_SIDE = sprite([
+// 사이드뷰 — 오른쪽을 바라본 옆모습. 왼쪽은 좌우 반전으로 재사용한다.
+// 상체는 공통이고 아래 세 줄(다리)만 자세마다 갈린다.
+const SIDE_UPPER = [
   '...kkkkk.....',
   '..kHHHHHk....',
   '.kHHHHHHHk...',
@@ -63,11 +64,64 @@ export const SPR_SIDE = sprite([
   'kccccccccklf.',
   'kcccccccckl..',
   '.kllllllk....',
+];
+
+/** 서 있는 자세 — 두 다리를 모은다. */
+export const SPR_SIDE = sprite([
+  ...SIDE_UPPER,
   '.kcck.kcck...',
   '.kcck.kcck...',
   '.kkkk.kkkk...',
   '.............',
 ]);
+
+/** 걷기 — 다리를 벌린 프레임. 서 있는 자세와 번갈아 쓴다. */
+const SPR_SIDE_STRIDE = sprite([
+  ...SIDE_UPPER,
+  'kcck...kcck..',
+  'kcck...kcck..',
+  'kkk.....kkk..',
+  '.............',
+]);
+
+/** 점프·낙하 — 다리를 모아 접는다. */
+export const SPR_SIDE_JUMP = sprite([
+  ...SIDE_UPPER,
+  '..kcckcck....',
+  '..kcckcck....',
+  '..kkkkkk.....',
+  '.............',
+]);
+
+/** 걷기 사이클(두 프레임). */
+export const SIDE_WALK_CYCLE = [SPR_SIDE, SPR_SIDE_STRIDE] as const;
+
+/** 걷기 한 프레임이 유지되는 시간(ms). */
+const WALK_FRAME_MS = 130;
+
+/**
+ * 지금 그릴 옆모습을 고른다.
+ * 공중에 있으면 점프 자세, 움직이는 중이면 걷기 사이클, 멈춰 있으면 선 자세.
+ */
+export function sideFrame(
+  speed: number,
+  grounded: boolean,
+  timeMs: number,
+): Sprite {
+  if (!grounded) return SPR_SIDE_JUMP;
+  if (speed < 0.4) return SPR_SIDE;
+  const i = Math.floor(timeMs / WALK_FRAME_MS) % SIDE_WALK_CYCLE.length;
+  return SIDE_WALK_CYCLE[i];
+}
+
+/**
+ * 탑다운은 위에서 보므로 다리가 보이지 않는다. 대신 걸을 때 상하로 살짝
+ * 흔들어 움직이는 느낌을 준다(픽셀 단위라 정수로 끊는다).
+ */
+export function topBobPixels(speed: number, timeMs: number): number {
+  if (speed < 0.4) return 0;
+  return Math.sin(timeMs / 90) > 0 ? 1 : 0;
+}
 
 /**
  * 스프라이트를 (x, y)에 픽셀 크기 px 로 그린다.

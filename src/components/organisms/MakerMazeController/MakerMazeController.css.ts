@@ -25,6 +25,9 @@ export const hint = style({
 });
 
 export const submit = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space.sm,
   marginTop: vars.space.sm,
 });
 

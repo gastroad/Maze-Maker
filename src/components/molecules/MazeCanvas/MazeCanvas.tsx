@@ -8,6 +8,7 @@ import {
   readPalette,
   type Palette,
 } from '@game/renderer';
+import type { PathStep } from '@utils/findPath';
 import type { MazeDataType, PointType } from '@type/maze';
 
 import * as s from './MazeCanvas.css';
@@ -20,7 +21,10 @@ export interface MazeCanvasProps {
   onPaint?: (row: number, col: number) => void;
   /** 각 칸에 높이 숫자를 겹쳐 그린다(셀이 충분히 클 때만). */
   showValues?: boolean;
-  resolvedPath?: PointType[];
+  /** 최적 경로. 셀을 덮지 않고 얇은 선으로 긋는다. */
+  path?: PathStep[] | null;
+  /** 커서가 놓인 칸이 바뀔 때 알린다(단면 미리보기 연동용). */
+  onHoverChange?: (cell: { row: number; col: number } | null) => void;
   label?: string;
 }
 
@@ -34,7 +38,8 @@ const MazeCanvas: FC<MazeCanvasProps> = ({
   end,
   onPaint,
   showValues,
-  resolvedPath,
+  path,
+  onHoverChange,
   label,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -78,11 +83,9 @@ const MazeCanvas: FC<MazeCanvasProps> = ({
     drawStaticMaze(ctx, { mazeData, start, end }, metrics, pal, {
       hover: onPaint ? hover : null,
       showValues,
-      pathSet: resolvedPath?.length
-        ? new Set(resolvedPath.map((p) => `${p.x},${p.y}`))
-        : undefined,
+      path: path ?? undefined,
     });
-  }, [mazeData, start, end, hover, onPaint, showValues, resolvedPath]);
+  }, [mazeData, start, end, hover, onPaint, showValues, path]);
 
   useEffect(() => {
     draw();
@@ -121,6 +124,7 @@ const MazeCanvas: FC<MazeCanvasProps> = ({
     if (!onPaint) return;
     const at = locate(e);
     setHover(at);
+    onHoverChange?.(at);
     // 드래그 중이면 지나가는 칸을 계속 칠한다.
     // 같은 값이면 store 가 상태를 바꾸지 않으므로 리렌더가 발생하지 않는다.
     if (paintingRef.current && at) onPaint(at.row, at.col);
@@ -142,6 +146,7 @@ const MazeCanvas: FC<MazeCanvasProps> = ({
       onPointerLeave={() => {
         stopPainting();
         setHover(null);
+        onHoverChange?.(null);
       }}
     />
   );

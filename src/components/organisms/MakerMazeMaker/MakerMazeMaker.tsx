@@ -1,11 +1,13 @@
 'use client';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import MazeCanvas from '@components/molecules/MazeCanvas';
+import SlicePreview from '@components/molecules/SlicePreview';
 import { useMakerStore } from '@state/maker/store';
+import type { SliceAxis } from '@game/mazeEngine';
 import type { MazeDataType } from '@type/maze';
 
-import { maker } from './MakerMazeMaker.css';
+import * as s from './MakerMazeMaker.css';
 
 export interface MakerMazeMakerProps {}
 const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
@@ -15,7 +17,7 @@ const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
   const setStartEnd = useMakerStore((state) => state.setStartEnd);
   const maze = useMakerStore((state) => state.maze);
   const paint = useMakerStore((state) => state.paint);
-  const resolvedPath = useMakerStore((state) => state.resolvedPath);
+  const pathPreview = useMakerStore((state) => state.pathPreview);
 
   // 크기가 바뀌면 판을 새로 만든다.
   useEffect(() => {
@@ -36,16 +38,34 @@ const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [maze.mazeSize, setMazeData, setStartEnd]);
 
+  // 커서가 놓인 줄의 단면을 옆에 세워 보여 준다
+  const [hover, setHover] = useState<{ row: number; col: number } | null>(null);
+  const [sliceAxis, setSliceAxis] = useState<SliceAxis>('row');
+  const sliceIndex = hover ? (sliceAxis === 'col' ? hover.col : hover.row) : null;
+  const marker = hover ? (sliceAxis === 'col' ? hover.row : hover.col) : null;
+
   return (
-    <div className={maker}>
-      <MazeCanvas
+    <div className={s.wrap}>
+      <div className={s.maker}>
+        <MazeCanvas
+          mazeData={mazeData}
+          start={startEnd.start}
+          end={startEnd.end}
+          path={pathPreview}
+          onPaint={paint}
+          onHoverChange={setHover}
+          showValues
+          label="미로 편집기"
+        />
+      </div>
+      <SlicePreview
         mazeData={mazeData}
-        start={startEnd.start}
-        end={startEnd.end}
-        resolvedPath={resolvedPath}
-        onPaint={paint}
-        showValues
-        label="미로 편집기"
+        axis={sliceAxis}
+        index={sliceIndex}
+        marker={marker}
+        onToggleAxis={() =>
+          setSliceAxis((a) => (a === 'col' ? 'row' : 'col'))
+        }
       />
     </div>
   );
