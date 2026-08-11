@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  getMazeById,
-  deleteMaze,
-  MazeOwnershipError,
-} from '@server/service/mazeService';
+import { deleteMaze, MazeOwnershipError } from '@server/service/mazeService';
 import { auth } from '@server/auth/server';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(req: NextRequest, { params }: RouteContext) {
-  const { id } = await params;
-  const maze = await getMazeById(id);
-  return NextResponse.json({ status: 'success', results: maze });
-}
+// GET 은 없다. 상세 페이지가 서버 컴포넌트에서 getMazeById 를 직접 부르므로
+// 호출부가 없었고, 인증 없이 미로의 userId 까지 그대로 내주고 있었다.
 
 export async function DELETE(req: NextRequest, { params }: RouteContext) {
   const { id } = await params;

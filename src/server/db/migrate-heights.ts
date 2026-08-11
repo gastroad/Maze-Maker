@@ -30,30 +30,36 @@ function raiseWalls(data: MazeDataType): MazeDataType {
   return data.map((row) => row.map((v) => (v === 1 ? 2 : v)));
 }
 
+const SAMPLE_MAZE_DATA: MazeDataType = [
+  [9, 9, 9, 9, 9, 9, 9, 9],
+  [9, 0, 0, 0, 0, 0, 0, 9],
+  [9, 0, 0, 1, 0, 0, 0, 9], // 계단 1단
+  [9, 0, 0, 2, 0, 0, 0, 9], // 계단 2단 → 여기서 2층
+  [9, 2, 2, 2, 2, 2, 2, 9], // 탑다운으로는 넘을 수 없는 띠
+  [9, 0, 0, 0, 0, 0, 0, 9],
+  [9, 0, 0, 0, 0, 0, 0, 9],
+  [9, 9, 9, 9, 9, 9, 9, 9],
+];
+
+const SAMPLE_START = { x: 1, y: 1 };
+const SAMPLE_END = { x: 6, y: 6 };
+
 /**
  * 2층 통로를 처음 보여주는 검증용 미로.
  * 4행이 높이 2 벽으로 완전히 막혀 탑다운으로는 건널 수 없고,
  * 열 3 의 계단(0 → 1 → 2)을 사이드뷰에서 올라 2층으로 넘어가야 한다.
+ *
+ * A* 는 높이를 이해하므로(JUMP_MAX_HEIGHT 이내면 등반 허용) 별점 기준선도 실제로
+ * 계산해서 넣는다. 빈 배열로 두면 par 가 0 이 되어 별점이 항상 만점이 된다.
  */
 const SAMPLE_MAZE = {
   title: '2층 통로',
   name: 'system',
   mazeSize: { rows: 8, cols: 8 },
-  start: { x: 1, y: 1 },
-  end: { x: 6, y: 6 },
-  mazeData: [
-    [9, 9, 9, 9, 9, 9, 9, 9],
-    [9, 0, 0, 0, 0, 0, 0, 9],
-    [9, 0, 0, 1, 0, 0, 0, 9], // 계단 1단
-    [9, 0, 0, 2, 0, 0, 0, 9], // 계단 2단 → 여기서 2층
-    [9, 2, 2, 2, 2, 2, 2, 9], // 탑다운으로는 넘을 수 없는 띠
-    [9, 0, 0, 0, 0, 0, 0, 9],
-    [9, 0, 0, 0, 0, 0, 0, 9],
-    [9, 9, 9, 9, 9, 9, 9, 9],
-  ] as MazeDataType,
-  // A* 는 아직 높이를 모르므로(높이 0 만 통과) 이 미로의 경로를 찾지 못한다.
-  // 별점 기준선은 비워 둔다.
-  resolvedPath: [],
+  start: SAMPLE_START,
+  end: SAMPLE_END,
+  mazeData: SAMPLE_MAZE_DATA,
+  resolvedPath: findPath(SAMPLE_MAZE_DATA, SAMPLE_START, SAMPLE_END) ?? [],
 };
 
 async function main() {

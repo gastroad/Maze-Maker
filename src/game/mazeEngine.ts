@@ -83,30 +83,6 @@ export const STAR_RATIO = { three: 2.5, two: 4.5 } as const;
 
 const EPS = 1e-6;
 
-/** 방향키/문자키를 Direction 으로 매핑 (없으면 null) — 키보드 입력용 */
-export function keyToDirection(key: string): Direction | null {
-  switch (key) {
-    case 'ArrowUp':
-    case 'w':
-    case 'W':
-      return 'up';
-    case 'ArrowDown':
-    case 's':
-    case 'S':
-      return 'down';
-    case 'ArrowLeft':
-    case 'a':
-    case 'A':
-      return 'left';
-    case 'ArrowRight':
-    case 'd':
-    case 'D':
-      return 'right';
-    default:
-      return null;
-  }
-}
-
 /** 경계 밖은 절대벽으로 취급한다(어떤 높이에서도 넘을 수 없다). */
 export function heightAt(
   mazeData: MazeDataType,
@@ -492,24 +468,4 @@ export function computeStars(timeMs: number, optimalCells: number): number {
   if (ratio <= STAR_RATIO.three) return 3;
   if (ratio <= STAR_RATIO.two) return 2;
   return 1;
-}
-
-export interface GameResult {
-  timeMs: number;
-  optimal: number;
-  parMs: number;
-  stars: number;
-}
-
-export function getResult(
-  state: Pick<GameState, 'startedAt' | 'finishedAt'>,
-  optimalCells: number,
-): GameResult {
-  const timeMs = elapsedMs(state);
-  return {
-    timeMs,
-    optimal: optimalCells,
-    parMs: parMs(optimalCells),
-    stars: computeStars(timeMs, optimalCells),
-  };
 }

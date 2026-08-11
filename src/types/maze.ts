@@ -1,5 +1,3 @@
-export type CellType = 'start' | 'end' | 'wall' | 'road' | 'resolve';
-
 /**
  * 셀의 지형 높이. 탑다운에서는 "내 발 높이보다 높으면 통과 불가"로,
  * 사이드뷰에서는 그대로 지형의 높이로 해석된다(같은 데이터 한 벌).
@@ -21,6 +19,16 @@ export type MazeDataType = MazeDataValueType[][];
  * 이 값이 그 상승을 끊어 플레이어가 맵 밖으로 나가는 것을 막는다.
  */
 export const ABSOLUTE_WALL = 9;
+
+/** 지형으로 쓸 수 있는 가장 높은 값. 이보다 위는 ABSOLUTE_WALL 뿐이다. */
+export const MAX_TERRAIN_HEIGHT = 3;
+
+/**
+ * 판 크기의 한계. 캔버스 렌더는 100x100 을 감당하지만 그 이상은 편집 자체가
+ * 비현실적이다. 편집 UI 와 서버 검증이 같은 값을 봐야 해서 여기에 둔다.
+ */
+export const MIN_SIZE = 2;
+export const MAX_SIZE = 100;
 
 /**
  * 미로의 크기. 과거에는 `{ col, row }` 였는데 col 이 행 수, row 가 열 수라

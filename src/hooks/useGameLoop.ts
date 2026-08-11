@@ -9,14 +9,10 @@ import {
   type GameState,
   type MazeLike,
 } from '@game/mazeEngine';
-import {
-  readPalette,
-  render,
-  type Palette,
-  type RenderOptions,
-  type ViewMetrics,
-} from '@game/renderer';
+import { render, type RenderOptions, type ViewMetrics } from '@game/renderer';
 import { useGameStore } from '@state/game/store';
+
+import useThemePalette from './useThemePalette';
 
 interface UseGameLoopArgs {
   maze: MazeLike;
@@ -52,26 +48,13 @@ export default function useGameLoop({
   const syncRun = useGameStore((s) => s.syncRun);
 
   const stateRef = useRef<GameState>(createGame(maze));
-  const paletteRef = useRef<Palette | null>(null);
+  // 루프가 매 프레임 스스로 다시 그리므로 테마 변경에 리렌더가 필요 없다
+  const { paletteRef } = useThemePalette();
 
   // init/reset(runId) 또는 미로 변경 시 물리 상태 재생성
   useEffect(() => {
     stateRef.current = createGame(maze);
   }, [runId, maze]);
-
-  // 테마가 바뀌면 캔버스 색도 따라가야 한다(<html> 클래스 교체를 감시)
-  useEffect(() => {
-    const refresh = () => {
-      paletteRef.current = readPalette(document.documentElement);
-    };
-    refresh();
-    const mo = new MutationObserver(refresh);
-    mo.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class', 'data-theme'],
-    });
-    return () => mo.disconnect();
-  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -186,5 +169,14 @@ export default function useGameLoop({
       cancelAnimationFrame(raf);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [maze, runId, canvasRef, getInput, optionsRef, onFrame, syncRun]);
+  }, [
+    maze,
+    runId,
+    canvasRef,
+    getInput,
+    optionsRef,
+    onFrame,
+    syncRun,
+    paletteRef,
+  ]);
 }

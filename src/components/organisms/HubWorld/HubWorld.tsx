@@ -3,9 +3,10 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useGameStore } from '@state/game/store';
-import { type GameState, type Input, type MazeLike } from '@game/mazeEngine';
+import { type GameState, type MazeLike } from '@game/mazeEngine';
 import type { RenderOptions } from '@game/renderer';
 import type { HubMap, Portal } from '@game/hubs';
+import useArcadeInput from '@hooks/useArcadeInput';
 import useGameLoop from '@hooks/useGameLoop';
 import AxisFlipButtons from '@components/molecules/AxisFlipButtons';
 import VirtualJoystick from '@components/molecules/VirtualJoystick';
@@ -90,65 +91,10 @@ const HubWorld: FC<HubWorldProps> = ({ hub, hint }) => {
     [hub.portals, router],
   );
 
-  const keysRef = useRef({ up: false, down: false, left: false, right: false });
-  const joyRef = useRef({ x: 0, y: 0 });
-  const getInput = useCallback((): Input => {
-    const k = keysRef.current;
-    const kx = (k.down ? 1 : 0) - (k.up ? 1 : 0);
-    const ky = (k.right ? 1 : 0) - (k.left ? 1 : 0);
-    if (kx !== 0 || ky !== 0) return { x: kx, y: ky };
-    return joyRef.current;
-  }, []);
+  // 플레이 화면과 같은 조작 — 허브에서 익힌 그대로 스테이지에서 쓰게 한다
+  const { getInput, onJoystick } = useArcadeInput(requestFlip);
 
   useGameLoop({ maze, canvasRef, getInput, optionsRef, onFrame });
-
-  useEffect(() => {
-    const MAP: Record<string, keyof typeof keysRef.current> = {
-      ArrowUp: 'up',
-      ArrowDown: 'down',
-      ArrowLeft: 'left',
-      ArrowRight: 'right',
-      w: 'up',
-      a: 'left',
-      s: 'down',
-      d: 'right',
-      W: 'up',
-      A: 'left',
-      S: 'down',
-      D: 'right',
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === ' ') {
-        e.preventDefault();
-        if (!e.repeat) requestFlip();
-        return;
-      }
-      const k = MAP[e.key];
-      if (k) {
-        keysRef.current[k] = true;
-        e.preventDefault();
-      }
-    };
-    const onKeyUp = (e: KeyboardEvent) => {
-      const k = MAP[e.key];
-      if (k) keysRef.current[k] = false;
-    };
-    const clear = () => {
-      keysRef.current = { up: false, down: false, left: false, right: false };
-    };
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-    window.addEventListener('blur', clear);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
-      window.removeEventListener('blur', clear);
-    };
-  }, [requestFlip]);
-
-  const onJoystick = useCallback((v: { x: number; y: number }) => {
-    joyRef.current = v;
-  }, []);
 
   return (
     <div className={s.wrap}>
