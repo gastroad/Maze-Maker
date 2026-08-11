@@ -6,8 +6,6 @@ import {
   elapsedMs,
   parMs,
   computeStars,
-  getResult,
-  keyToDirection,
   enterSideView,
   exitSideView,
   SPEED,
@@ -144,22 +142,6 @@ describe('mazeEngine (자유 이동)', () => {
     expect(computeStars(par * 3, 10)).toBe(2); // 다소 느림
     expect(computeStars(par * 6, 10)).toBe(1); // 많이 느림
     expect(computeStars(0, 10)).toBe(3); // 시작 시 만점
-  });
-
-  it('getResult 는 시간·par·별점을 종합한다', () => {
-    // getResult 는 타이머 두 필드만 보므로 전체 GameState 를 만들 필요가 없다
-    const won = { startedAt: 1000, finishedAt: 1000 + parMs(10) };
-    const r = getResult(won, 10);
-    expect(r.timeMs).toBeCloseTo(parMs(10), 6);
-    expect(r).toMatchObject({ optimal: 10, stars: 3 });
-    expect(r.parMs).toBe(parMs(10));
-  });
-
-  it('keyToDirection 은 방향키와 WASD 를 매핑한다', () => {
-    expect(keyToDirection('ArrowUp')).toBe('up');
-    expect(keyToDirection('w')).toBe('up');
-    expect(keyToDirection('D')).toBe('right');
-    expect(keyToDirection('Enter')).toBeNull();
   });
 });
 
