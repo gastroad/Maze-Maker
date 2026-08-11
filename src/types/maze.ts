@@ -22,6 +22,16 @@ export type MazeDataType = MazeDataValueType[][];
  */
 export const ABSOLUTE_WALL = 9;
 
+/** 지형으로 쓸 수 있는 가장 높은 값. 이보다 위는 ABSOLUTE_WALL 뿐이다. */
+export const MAX_TERRAIN_HEIGHT = 3;
+
+/**
+ * 판 크기의 한계. 캔버스 렌더는 100x100 을 감당하지만 그 이상은 편집 자체가
+ * 비현실적이다. 편집 UI 와 서버 검증이 같은 값을 봐야 해서 여기에 둔다.
+ */
+export const MIN_SIZE = 2;
+export const MAX_SIZE = 100;
+
 /**
  * 미로의 크기. 과거에는 `{ col, row }` 였는데 col 이 행 수, row 가 열 수라
  * 읽는 사람마다 뒤집어 해석하는 문제가 있어 이름을 바로잡았다.

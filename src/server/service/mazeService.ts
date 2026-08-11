@@ -76,15 +76,20 @@ export async function getMazeById(id: string): Promise<MazeType | undefined> {
 }
 
 export async function createMaze(
-  input: MazeType,
+  input: Omit<MazeType, 'mazeSize'>,
   userId: string,
 ): Promise<MazeType> {
   // id 는 클라이언트가 보내더라도 무시하고 DB(gen_random_uuid)가 생성한다.
   // 소유자(userId)는 서버 세션에서 받은 값만 신뢰한다(요청 본문 무시).
+  // mazeSize 도 같은 이유로 요청 값을 쓰지 않는다. 크기의 원천은 언제나 mazeData 라
+  // 클라가 보낸 숫자를 믿으면 둘이 어긋난다(migrate-maze-size 가 그 뒷수습이었다).
   const row = await insertMaze({
     title: input.title,
     name: input.name,
-    mazeSize: input.mazeSize,
+    mazeSize: {
+      rows: input.mazeData.length,
+      cols: input.mazeData[0]?.length ?? 0,
+    },
     mazeData: input.mazeData,
     start: input.start,
     end: input.end,

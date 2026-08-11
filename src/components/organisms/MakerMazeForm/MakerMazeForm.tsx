@@ -3,12 +3,12 @@ import { FC, ChangeEvent, KeyboardEvent, useState } from 'react';
 
 import TextInputWithLabel from '@components/molecules/TextInputWithLabel';
 import { useMakerStore } from '@state/maker/store';
+import { MAX_SIZE, MIN_SIZE } from '@type/maze';
 
 import * as s from './MakerMazeForm.css';
 
-/** 캔버스 렌더는 100x100 을 감당하지만, 그 이상은 편집 자체가 비현실적이다. */
-export const MIN_SIZE = 2;
-export const MAX_SIZE = 100;
+// 서버 검증도 같은 한계를 강제하므로 원천은 @type/maze 한 곳에 둔다.
+export { MAX_SIZE, MIN_SIZE };
 
 type SizeField = 'rows' | 'cols';
 
