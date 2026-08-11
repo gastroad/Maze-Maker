@@ -1,8 +1,9 @@
 'use client';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 
-import { drawSlicePreview, readPalette, type Palette } from '@game/renderer';
+import { drawSlicePreview } from '@game/renderer';
 import { sliceTerrain, type SliceAxis } from '@game/mazeEngine';
+import useThemePalette from '@hooks/useThemePalette';
 import type { MazeDataType } from '@type/maze';
 
 import * as s from './SlicePreview.css';
@@ -30,22 +31,8 @@ const SlicePreview: FC<SlicePreviewProps> = ({
   onToggleAxis,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const paletteRef = useRef<Palette | null>(null);
-  const [themeTick, setThemeTick] = useState(0);
-
-  useEffect(() => {
-    const refresh = () => {
-      paletteRef.current = readPalette(document.documentElement);
-      setThemeTick((t) => t + 1);
-    };
-    refresh();
-    const mo = new MutationObserver(refresh);
-    mo.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class', 'data-theme'],
-    });
-    return () => mo.disconnect();
-  }, []);
+  // 한 번 그리고 마는 캔버스라 테마가 바뀌면 다시 그릴 계기가 필요하다
+  const { paletteRef, themeTick } = useThemePalette(true);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -67,7 +54,7 @@ const SlicePreview: FC<SlicePreviewProps> = ({
     if (index < 0 || index >= limit) return;
     const terrain = sliceTerrain(mazeData, axis, index);
     drawSlicePreview(ctx, terrain, { width: w, height: h, cell: 0 }, pal, marker);
-  }, [mazeData, axis, index, marker]);
+  }, [mazeData, axis, index, marker, paletteRef]);
 
   useEffect(() => {
     draw();

@@ -5,16 +5,9 @@ import Link from 'next/link';
 import { useGameStore } from '@state/game/store';
 import { elapsedMs, computeStars, parMs } from '@game/mazeEngine';
 import { button } from '@components/atoms/Button/Button.css';
+import { formatTime } from '@utils/formatTime';
 
 import * as s from './PlayResult.css';
-
-function formatTime(ms: number): string {
-  const total = Math.floor(ms / 1000);
-  const m = Math.floor(total / 60);
-  const sec = total % 60;
-  const cs = Math.floor((ms % 1000) / 10);
-  return `${m}:${String(sec).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
-}
 
 export interface PlayResultProps {}
 const PlayResult: FC<PlayResultProps> = () => {

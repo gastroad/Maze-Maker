@@ -1,13 +1,8 @@
 'use client';
 import { FC, PointerEvent, useCallback, useEffect, useRef, useState } from 'react';
 
-import {
-  cellAt,
-  drawStaticMaze,
-  fitMetrics,
-  readPalette,
-  type Palette,
-} from '@game/renderer';
+import { cellAt, drawStaticMaze, fitMetrics } from '@game/renderer';
+import useThemePalette from '@hooks/useThemePalette';
 import type { PathStep } from '@utils/findPath';
 import type { MazeDataType, PointType } from '@type/maze';
 
@@ -43,25 +38,10 @@ const MazeCanvas: FC<MazeCanvasProps> = ({
   label,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const paletteRef = useRef<Palette | null>(null);
   const [hover, setHover] = useState<{ row: number; col: number } | null>(null);
   const paintingRef = useRef(false);
-  const [themeTick, setThemeTick] = useState(0);
-
-  // 테마가 바뀌면 캔버스 색도 따라가야 한다
-  useEffect(() => {
-    const refresh = () => {
-      paletteRef.current = readPalette(document.documentElement);
-      setThemeTick((t) => t + 1);
-    };
-    refresh();
-    const mo = new MutationObserver(refresh);
-    mo.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class', 'data-theme'],
-    });
-    return () => mo.disconnect();
-  }, []);
+  // 한 번 그리고 마는 캔버스라 테마가 바뀌면 다시 그릴 계기가 필요하다
+  const { paletteRef, themeTick } = useThemePalette(true);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -85,7 +65,7 @@ const MazeCanvas: FC<MazeCanvasProps> = ({
       showValues,
       path: path ?? undefined,
     });
-  }, [mazeData, start, end, hover, onPaint, showValues, path]);
+  }, [mazeData, start, end, hover, onPaint, showValues, path, paletteRef]);
 
   useEffect(() => {
     draw();

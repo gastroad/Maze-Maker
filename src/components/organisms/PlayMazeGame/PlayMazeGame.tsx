@@ -1,10 +1,10 @@
 'use client';
-import { FC, useCallback, useEffect, useMemo, useRef } from 'react';
+import { FC, useEffect, useMemo, useRef } from 'react';
 
 import { useGameStore } from '@state/game/store';
-import { type Input } from '@game/mazeEngine';
 import type { RenderOptions } from '@game/renderer';
 import { toPathSteps } from '@utils/findPath';
+import useArcadeInput from '@hooks/useArcadeInput';
 import useGameLoop from '@hooks/useGameLoop';
 import AxisFlipButtons from '@components/molecules/AxisFlipButtons';
 import VirtualJoystick from '@components/molecules/VirtualJoystick';
@@ -43,16 +43,8 @@ const PlayMazeGame: FC<PlayMazeGameProps> = ({ maze }) => {
     };
   }, [showAnswer, path, previewAxis]);
 
-  // 입력 소스: 키보드(불리언) 우선, 없으면 조이스틱(아날로그)
-  const keysRef = useRef({ up: false, down: false, left: false, right: false });
-  const joyRef = useRef({ x: 0, y: 0 });
-  const getInput = useCallback((): Input => {
-    const k = keysRef.current;
-    const kx = (k.down ? 1 : 0) - (k.up ? 1 : 0);
-    const ky = (k.right ? 1 : 0) - (k.left ? 1 : 0);
-    if (kx !== 0 || ky !== 0) return { x: kx, y: ky };
-    return joyRef.current;
-  }, []);
+  // 키보드(방향키·WASD·스페이스)와 가상 조이스틱 — 허브와 같은 조작이다
+  const { getInput, onJoystick } = useArcadeInput(requestFlip);
 
   // 미로가 준비되면 새 게임 시작
   useEffect(() => {
@@ -61,61 +53,12 @@ const PlayMazeGame: FC<PlayMazeGameProps> = ({ maze }) => {
 
   useGameLoop({ maze, canvasRef, getInput, optionsRef });
 
-  // 키보드 — 방향키/WASD 이동, 스페이스로 시점 전환
-  useEffect(() => {
-    const MAP: Record<string, keyof typeof keysRef.current> = {
-      ArrowUp: 'up',
-      ArrowDown: 'down',
-      ArrowLeft: 'left',
-      ArrowRight: 'right',
-      w: 'up',
-      a: 'left',
-      s: 'down',
-      d: 'right',
-      W: 'up',
-      A: 'left',
-      S: 'down',
-      D: 'right',
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === ' ') {
-        e.preventDefault();
-        if (!e.repeat) requestFlip();
-        return;
-      }
-      const k = MAP[e.key];
-      if (k) {
-        keysRef.current[k] = true;
-        e.preventDefault();
-      }
-    };
-    const onKeyUp = (e: KeyboardEvent) => {
-      const k = MAP[e.key];
-      if (k) keysRef.current[k] = false;
-    };
-    const clear = () => {
-      keysRef.current = { up: false, down: false, left: false, right: false };
-    };
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-    window.addEventListener('blur', clear);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
-      window.removeEventListener('blur', clear);
-    };
-  }, [requestFlip]);
-
   // 안내 문구는 잠깐만 띄운다
   useEffect(() => {
     if (!notice) return;
     const id = setTimeout(() => setNotice(null), 2200);
     return () => clearTimeout(id);
   }, [notice, setNotice]);
-
-  const onJoystick = useCallback((v: { x: number; y: number }) => {
-    joyRef.current = v;
-  }, []);
 
   return (
     <div className={s.wrap}>
