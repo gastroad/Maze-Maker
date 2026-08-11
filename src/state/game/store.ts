@@ -54,10 +54,14 @@ export const useGameStore = create<GameStore>((set) => ({
   notice: null,
 
   init: (maze) => {
+    // 빈 배열도 fallback 을 타야 한다. `??` 로만 이으면 `[].length === 0` 이
+    // nullish 가 아니라 optimal 이 0 으로 굳고, par 가 0 이 되어 별점이 항상 3 이 된다.
+    // DB 에는 resolvedPath 가 [] 인 미로가 실제로 들어간다(mazeService.createMaze).
+    const stored = maze.resolvedPath?.length ?? 0;
     const optimal =
-      maze.resolvedPath?.length ??
-      findPath(maze.mazeData, maze.start, maze.end)?.length ??
-      0;
+      stored > 0
+        ? stored
+        : (findPath(maze.mazeData, maze.start, maze.end)?.length ?? 0);
     set((s) => ({
       maze,
       optimal,
