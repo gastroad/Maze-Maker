@@ -62,4 +62,51 @@ describe('maker store', () => {
     paint(0, 999);
     expect(useMakerStore.getState().mazeData).toBe(before);
   });
+
+  describe('resizeBoard', () => {
+    // 예전에는 크기를 바꿀 때마다 판을 0 으로 리셋해서 편집하던 내용이 날아갔다
+    it('키우면 기존 내용을 그대로 두고 늘어난 칸만 0 으로 채운다', () => {
+      const { setBrush, paint, resizeBoard } = useMakerStore.getState();
+      setBrush({ kind: 'height', value: 3 });
+      paint(1, 1);
+
+      resizeBoard({ rows: 7, cols: 8 });
+
+      const { mazeData } = useMakerStore.getState();
+      expect(mazeData).toHaveLength(7);
+      expect(mazeData[0]).toHaveLength(8);
+      expect(mazeData[1][1]).toBe(3); // 편집한 칸은 살아 있다
+      expect(mazeData[6][7]).toBe(0); // 새로 생긴 칸은 바닥
+    });
+
+    it('줄이면 범위를 벗어난 부분만 잘라낸다', () => {
+      const { setBrush, paint, resizeBoard } = useMakerStore.getState();
+      setBrush({ kind: 'height', value: 2 });
+      paint(0, 0);
+      paint(4, 4);
+
+      resizeBoard({ rows: 3, cols: 3 });
+
+      const { mazeData } = useMakerStore.getState();
+      expect(mazeData).toHaveLength(3);
+      expect(mazeData[0][0]).toBe(2);
+      expect(mazeData.flat()).toHaveLength(9);
+    });
+
+    it('판 밖으로 밀려난 시작·도착점을 안쪽으로 끌어당긴다', () => {
+      const { resizeBoard } = useMakerStore.getState();
+      expect(useMakerStore.getState().startEnd.end).toEqual({ x: 4, y: 4 });
+
+      resizeBoard({ rows: 3, cols: 2 });
+
+      expect(useMakerStore.getState().startEnd.end).toEqual({ x: 2, y: 1 });
+    });
+
+    it('같은 크기로 부르면 상태를 바꾸지 않는다', () => {
+      const { resizeBoard } = useMakerStore.getState();
+      const before = useMakerStore.getState().mazeData;
+      resizeBoard({ rows: 5, cols: 5 });
+      expect(useMakerStore.getState().mazeData).toBe(before);
+    });
+  });
 });

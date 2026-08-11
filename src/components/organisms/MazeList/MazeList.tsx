@@ -14,10 +14,12 @@ export interface MazeListProps {
 const MazeList: FC<MazeListProps> = ({ mazeList, currentUserId }) => {
   return (
     <ul className={list}>
+      {/* DB 에서 온 목록은 언제나 id 가 있다. 인덱스로 키를 잡으면 항목을 지웠을 때
+          지워진 자리에 뒤 항목이 밀려들어와 잔상이 남는다. */}
       {mazeList.map((maze, index) => {
         return (
           <MazeListItem
-            key={`maze-${index}`}
+            key={maze.id ?? `maze-${index}`}
             maze={maze}
             currentUserId={currentUserId}
           />

@@ -5,38 +5,24 @@ import MazeCanvas from '@components/molecules/MazeCanvas';
 import SlicePreview from '@components/molecules/SlicePreview';
 import { useMakerStore } from '@state/maker/store';
 import type { SliceAxis } from '@game/mazeEngine';
-import type { MazeDataType } from '@type/maze';
 
 import * as s from './MakerMazeMaker.css';
 
 export interface MakerMazeMakerProps {}
 const MakerMazeMaker: FC<MakerMazeMakerProps> = () => {
   const mazeData = useMakerStore((state) => state.mazeData);
-  const setMazeData = useMakerStore((state) => state.setMazeData);
   const startEnd = useMakerStore((state) => state.startEnd);
-  const setStartEnd = useMakerStore((state) => state.setStartEnd);
   const maze = useMakerStore((state) => state.maze);
   const paint = useMakerStore((state) => state.paint);
   const pathPreview = useMakerStore((state) => state.pathPreview);
+  const resizeBoard = useMakerStore((state) => state.resizeBoard);
 
-  // 크기가 바뀌면 판을 새로 만든다.
+  // 크기가 바뀌면 편집하던 내용을 새 크기로 옮긴다(잘라내기/0 으로 채우기).
+  // 판을 읽고 쓰는 일은 store 안에서 끝나므로 startEnd·mazeData 를 의존성에
+  // 걸 필요가 없다 — 예전에는 그래서 exhaustive-deps 를 꺼야 했다.
   useEffect(() => {
-    const { rows, cols } = maze.mazeSize;
-    setMazeData(
-      Array.from({ length: rows }, () => Array(cols).fill(0)) as MazeDataType,
-    );
-    // 시작·도착이 새 판 밖으로 나가면 안쪽으로 끌어당긴다
-    const clamp = (p: { x: number; y: number }) => ({
-      x: Math.min(Math.max(p.x, 0), Math.max(rows - 1, 0)),
-      y: Math.min(Math.max(p.y, 0), Math.max(cols - 1, 0)),
-    });
-    setStartEnd({
-      start: clamp(startEnd.start),
-      end: clamp(startEnd.end),
-    });
-    // startEnd 를 의존성에 넣으면 클램프가 자기 자신을 다시 트리거한다
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [maze.mazeSize, setMazeData, setStartEnd]);
+    resizeBoard(maze.mazeSize);
+  }, [maze.mazeSize, resizeBoard]);
 
   // 커서가 놓인 줄의 단면을 옆에 세워 보여 준다
   const [hover, setHover] = useState<{ row: number; col: number } | null>(null);

@@ -48,6 +48,12 @@ interface MakerState {
   /** 한 칸에 현재 브러시를 적용한다. 드래그 페인팅이 매 프레임 호출한다. */
   paint: (row: number, col: number) => void;
   setMazeData: (mazeData: MazeDataType) => void;
+  /**
+   * 판을 새 크기로 옮긴다. 겹치는 칸은 그대로 두고, 줄어든 쪽은 잘라내며
+   * 늘어난 쪽은 바닥(0)으로 채운다. 크기를 바꿀 때마다 판을 0 으로 리셋하면
+   * 편집하던 내용이 경고도 없이 날아가기 때문이다.
+   */
+  resizeBoard: (size: MazeSizeType) => void;
   setStartEnd: (startEnd: StartEndStateType) => void;
   setResolvedPath: (resolvedPath: PointType[]) => void;
   /** '경로 확인'으로 계산한 최적 경로. 편집 중 표시용이라 저장과는 별개다. */
@@ -103,6 +109,31 @@ export const useMakerStore = create<MakerState>((set) => ({
     }),
 
   setMazeData: (mazeData) => set({ mazeData }),
+
+  resizeBoard: ({ rows, cols }) =>
+    set((s) => {
+      const same =
+        s.mazeData.length === rows && s.mazeData[0]?.length === cols;
+      if (same) return s;
+      const mazeData = Array.from({ length: rows }, (_, row) =>
+        Array.from({ length: cols }, (_, col) => s.mazeData[row]?.[col] ?? 0),
+      ) as MazeDataType;
+      // 시작·도착이 새 판 밖으로 나가면 안쪽으로 끌어당긴다
+      const clamp = (p: PointType): PointType => ({
+        x: Math.min(Math.max(p.x, 0), Math.max(rows - 1, 0)),
+        y: Math.min(Math.max(p.y, 0), Math.max(cols - 1, 0)),
+      });
+      return {
+        mazeData,
+        startEnd: {
+          start: clamp(s.startEnd.start),
+          end: clamp(s.startEnd.end),
+        },
+        // 판이 바뀌면 계산해 둔 경로는 더 이상 유효하지 않다
+        pathPreview: null,
+      };
+    }),
+
   setStartEnd: (startEnd) => set({ startEnd }),
   setResolvedPath: (resolvedPath) => set({ resolvedPath }),
   setPathPreview: (pathPreview) => set({ pathPreview }),
