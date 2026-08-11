@@ -25,7 +25,16 @@ export const toggle = style({
   },
 });
 
+/**
+ * 아이콘은 React state 가 아니라 <html data-theme> 에서 CSS 로 갈라진다.
+ * 서버는 사용자의 테마를 알 수 없어(localStorage/시스템 선호) 마크업으로 그리면
+ * 라이트 사용자의 하이드레이션에서 반드시 어긋나기 때문이다.
+ */
 export const icon = style({
   fontSize: '1.1rem',
   lineHeight: 1,
+  selectors: {
+    '&::before': { content: '"☀️"' },
+    'html[data-theme="light"] &::before': { content: '"🌙"' },
+  },
 });
